@@ -145,6 +145,10 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;b
 .stb:hover{background:var(--acc);color:#1a1612}
 .stb.vis{display:flex}
 .smb{display:none}
+.import-card{position:relative}
+.import-tip{position:absolute;top:10px;right:10px;color:var(--fg3);font-size:.85rem;cursor:help;transition:color .2s}
+.import-tip:hover{color:var(--acc)}
+@media(max-width:480px){.import-tip{top:8px;right:8px;font-size:.75rem}}
 @media(max-width:768px){.fm{grid-template-columns:repeat(2,1fr)}.tc{grid-template-columns:1fr}.sr{flex-direction:column;gap:10px}.sg{width:100%}.sd{align-self:flex-start}.sgb{height:34px;font-size:.72rem}.hero h1{font-size:2rem}.smb{display:inline-flex}.hide-sm{display:none}}
 @media(max-width:480px){.page{padding:12px}header{height:50px;padding:0 10px}.logo{font-size:1.15rem;gap:6px}.hide-sm{display:none}.btn-sm{padding:6px 8px;font-size:.75rem}.btn-icon{padding:6px 7px}.theme-btn{width:34px;height:34px;font-size:.9rem}.hdr-actions{gap:4px}.hero{padding:20px 0 14px}.hero h1{font-size:1.7rem}.hero p{font-size:.88rem}.actions-grid{grid-template-columns:1fr;gap:10px;margin:16px 0 24px}.fm{grid-template-columns:1fr}.sc{padding:12px;border-radius:12px}.sc-t{font-size:.88rem}.sg{width:100%}.sgb{height:38px;font-size:.75rem}.sgl{width:16px;font-size:.6rem}.cub{width:34px;height:34px;font-size:.9rem}.sw{gap:6px}.swl{min-width:50px;font-size:.68rem}.fc{padding:18px;border-radius:12px}.fsn{font-size:2.6rem}.si{flex-direction:column;align-items:stretch;gap:8px}.sis{text-align:left;min-width:auto}.sia{justify-content:flex-end}.mb{padding:18px;border-radius:14px}.mb h3{font-size:1.05rem}.mb p{font-size:.84rem;margin-bottom:14px}.to{min-width:180px;max-width:calc(100vw - 24px);font-size:.78rem;padding:8px 12px}.ps h2{font-size:1.2rem}.ps p,.ps li{font-size:.85rem}.st{font-size:.75rem}.st th,.st td{padding:5px 4px}.ct{font-size:.82rem}.ct th,.ct td{padding:7px 8px}.dr .dt{min-width:120px;flex:1 1 120px;font-size:.76rem}.dr .dc{width:48px;font-size:.76rem}.dr .dd{font-size:.76rem}#tb{right:8px;top:58px}.stb{width:38px;height:38px;bottom:14px;right:14px}}
 </style>
@@ -169,7 +173,12 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;b
   <div class="actions-grid">
     <div class="action-card" onclick="newForm()"><i class="fa-solid fa-plus"></i><h3>Новая форма</h3><span>Создать бланк каппинга</span></div>
     <div class="action-card" onclick="goPage('saved')"><i class="fa-solid fa-folder-open"></i><h3>Сохранённые</h3><span>Открыть ранее сохранённые формы</span></div>
-    <div class="action-card" onclick="trigImp()"><i class="fa-solid fa-file-import"></i><h3>Импорт</h3><span>Загрузить форму из файла</span></div>
+    <div class="action-card import-card" onclick="trigImp()">
+  	<i class="fa-solid fa-file-import"></i>
+  	<h3>Импорт</h3>
+  	<span>Загрузить форму из файла</span>
+  	<i class="fa-solid fa-circle-question import-tip" onclick="event.stopPropagation();toast('Импорт возможен только из JSON-файлов. Пример JSON-файлов можно посмотреть, нажав кнопку экспорта любой сохранённой формы','info')"></i>
+    </div>
   </div>
 
   <div class="ps">
