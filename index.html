@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cupping Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root[data-theme="dark"]{--bg:#0f0d0b;--bg2:#1a1612;--card:#211d17;--card-h:#2a2520;--fg:#ede4d8;--fg2:#c4b8a8;--fg3:#8a7e70;--acc:#d4a74e;--acc-h:#e0b85e;--acc-dim:rgba(212,167,78,.15);--brd:#352e25;--danger:#d45a4a;--danger-dim:rgba(212,90,74,.15);--ok:#5ab87a;--ok-dim:rgba(90,184,122,.15);--shadow:0 4px 24px rgba(0,0,0,.4);--glass:rgba(33,29,23,.85)}
+:root[data-theme="light"]{--bg:#f7f1e8;--bg2:#ede5d8;--card:#ffffff;--card-h:#faf6f0;--fg:#2a1f14;--fg2:#5a4d3e;--fg3:#8a7e70;--acc:#b8892e;--acc-h:#a07825;--acc-dim:rgba(184,137,46,.12);--brd:#ddd2c4;--danger:#c45040;--danger-dim:rgba(196,80,64,.1);--ok:#3a9a5a;--ok-dim:rgba(58,154,90,.1);--shadow:0 4px 24px rgba(0,0,0,.08);--glass:rgba(255,255,255,.9)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito Sans',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden;transition:background .4s,color .4s}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:700}
+a{color:var(--acc);text-decoration:none}
+.blob{position:fixed;border-radius:50%;filter:blur(120px);opacity:.12;pointer-events:none;z-index:0}
+.blob-1{width:500px;height:500px;background:#d4a74e;top:-10%;left:-10%;animation:bf 25s ease-in-out infinite}
+.blob-2{width:400px;height:400px;background:#8b5e3c;bottom:-5%;right:-8%;animation:bf 30s ease-in-out infinite reverse}
+.blob-3{width:300px;height:300px;background:#c47a3a;top:40%;right:20%;animation:bf 20s ease-in-out infinite 5s}
+@keyframes bf{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-40px) scale(1.05)}66%{transform:translate(-20px,30px) scale(.95)}}
+@media(prefers-reduced-motion:reduce){.blob{animation:none!important}}
+header{position:sticky;top:0;z-index:100;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--brd);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;transition:background .4s}
+.logo{display:flex;align-items:center;gap:8px;font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:700;color:var(--fg);cursor:pointer}
+.logo i{color:var(--acc);font-size:1.15rem}
+.hdr-actions{display:flex;align-items:center;gap:6px}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:10px;border:1px solid var(--brd);background:var(--card);color:var(--fg);font-size:.85rem;font-family:'Nunito Sans',sans-serif;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn:hover{background:var(--card-h);border-color:var(--acc);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn-accent{background:var(--acc);color:#1a1612;border-color:var(--acc)}
+.btn-accent:hover{background:var(--acc-h);border-color:var(--acc-h)}
+.btn-danger{border-color:var(--danger);color:var(--danger)}
+.btn-danger:hover{background:var(--danger-dim)}
+.btn-sm{padding:6px 10px;font-size:.78rem;border-radius:8px}
+.btn-icon{padding:7px 9px}
+.theme-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--brd);background:var(--card);color:var(--acc);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.theme-btn:hover{border-color:var(--acc);background:var(--acc-dim)}
+.hide-sm{display:inline}
+.page{display:none;position:relative;z-index:1;padding:16px;max-width:920px;margin:0 auto;animation:fu .4s ease}
+.page.active{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.hero{text-align:center;padding:32px 0 20px}
+.hero h1{font-size:2.4rem;color:var(--fg);line-height:1.15}
+.hero p{color:var(--fg3);font-size:1rem;margin-top:8px;max-width:500px;margin-inline:auto}
+.actions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0 32px}
+.action-card{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:22px 14px;text-align:center;cursor:pointer;transition:all .25s}
+.action-card:hover{border-color:var(--acc);transform:translateY(-3px);box-shadow:var(--shadow)}
+.action-card i{font-size:1.6rem;color:var(--acc);margin-bottom:8px;display:block}
+.action-card h3{font-size:1rem;margin-bottom:3px}
+.action-card span{font-size:.78rem;color:var(--fg3)}
+.ps{margin-bottom:24px}
+.ps h2{font-size:1.4rem;color:var(--acc);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--brd)}
+.ps h3{font-size:1.1rem;color:var(--fg);margin:16px 0 8px}
+.ps p,.ps li{color:var(--fg2);line-height:1.7;font-size:.9rem;word-wrap:break-word;overflow-wrap:break-word}
+.ps ul,.ps ol{padding-left:18px;margin:8px 0}
+.ps li{margin-bottom:6px}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--acc);color:#1a1612;font-size:.75rem;font-weight:700;margin-right:5px;flex-shrink:0}
+ul.stepsBrewing {list-style-type: none; padding-left: 0;}
+.st{width:100%;border-collapse:collapse;margin:12px 0;font-size:.82rem}
+.st th,.st td{padding:7px 8px;border:1px solid var(--brd);text-align:center}
+.st th{background:var(--acc-dim);color:var(--acc);font-weight:700}
+.st td{background:var(--card)}
+.ct{width:100%;border-collapse:collapse;margin:12px 0;font-size:.88rem}
+.ct th,.ct td{padding:9px 12px;border:1px solid var(--brd)}
+.ct th{background:var(--acc-dim);color:var(--acc);font-weight:700;text-align:left}
+.ct td{background:var(--card)}
+.cb{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.78rem;font-weight:600}
+.cb-o{background:var(--acc-dim);color:var(--acc)}.cb-e{background:var(--ok-dim);color:var(--ok)}.cb-v{background:rgba(100,149,237,.15);color:#6495ed}.cb-b{background:var(--danger-dim);color:var(--danger)}
+.note-box{background:var(--acc-dim);border:1px solid var(--acc);border-radius:10px;padding:14px 18px;margin:14px 0;font-size:.85rem;color:var(--fg2);line-height:1.7}
+.note-box strong{color:var(--acc)}
+.fm{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:.72rem;font-weight:600;color:var(--fg3);text-transform:uppercase;letter-spacing:.5px}
+.fg input,.fg textarea{background:var(--bg2);border:1px solid var(--brd);border-radius:9px;padding:9px 12px;color:var(--fg);font-family:'Nunito Sans',sans-serif;font-size:.88rem;transition:border-color .2s;outline:none;width:100%}
+.fg input:focus,.fg textarea:focus{border-color:var(--acc)}
+.fg textarea{resize:vertical;min-height:56px}
+.sc{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:16px;margin-bottom:12px;transition:border-color .2s}
+.sc:hover{border-color:color-mix(in srgb,var(--brd) 50%,var(--acc))}
+.sc-t{font-size:.95rem;font-weight:700;color:var(--fg);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.sc-t i{color:var(--acc);font-size:.85rem}
+.sc-s{font-size:.75rem;color:var(--fg3);margin-bottom:8px}
+.sr{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.sd{min-width:58px;text-align:center;padding:7px 10px;background:var(--bg2);border-radius:9px;border:1px solid var(--brd);flex-shrink:0}
+.sd .v{font-size:1.3rem;font-weight:700;color:var(--fg3);transition:color .3s}
+.sd .v.a{color:var(--acc)}
+.sd .u{font-size:.6rem;color:var(--fg3);text-transform:uppercase}
+.sg{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.sgr{display:flex;align-items:center;gap:3px}
+.sgl{width:18px;text-align:right;font-size:.65rem;color:var(--fg3);font-weight:600;flex-shrink:0}
+.sgb{flex:1;min-width:0;height:28px;border:1px solid var(--brd);border-radius:5px;background:var(--bg2);color:var(--fg3);font-size:.65rem;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Nunito Sans',sans-serif;padding:0 1px;overflow:hidden;white-space:nowrap}
+.sgb:hover{border-color:var(--acc);color:var(--fg2)}
+.sgb.sl{background:var(--acc);color:#1a1612;border-color:var(--acc);font-weight:700}
+.nf{margin-top:8px}
+.nf textarea{font-size:.8rem;min-height:42px}
+.cr{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+.cub{width:38px;height:38px;border-radius:9px;border:1px solid var(--brd);background:var(--bg2);color:var(--fg3);font-size:1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.cub:hover{border-color:var(--acc)}
+.cub.on{background:var(--acc-dim);border-color:var(--acc);color:var(--acc)}
+.cst{font-size:.82rem;color:var(--fg2);font-weight:600;margin-left:auto}
+.sw{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.swl{font-size:.72rem;color:var(--fg3);font-weight:600;white-space:nowrap;min-width:60px}
+.swl.r{text-align:right}
+input[type="range"]{-webkit-appearance:none;appearance:none;flex:1;height:5px;background:var(--brd);border-radius:3px;outline:none;cursor:pointer}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--acc);border:2px solid var(--card);cursor:pointer}
+input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--acc);border:2px solid var(--card);cursor:pointer}
+.dr{display:flex;gap:6px;align-items:center;margin-bottom:7px;flex-wrap:wrap}
+.dr select,.dr input{background:var(--bg2);border:1px solid var(--brd);border-radius:8px;padding:7px 9px;color:var(--fg);font-size:.8rem;font-family:'Nunito Sans',sans-serif;outline:none}
+.dr select:focus,.dr input:focus{border-color:var(--acc)}
+.dr .dt{min-width:160px;flex:1 1 160px}
+.dr .dc{width:56px;flex-shrink:0;text-align:center}
+.dr .dd{flex:2 1 100px;min-width:80px}
+.dr .dv{font-size:.8rem;color:var(--danger);font-weight:600;white-space:nowrap;min-width:40px;text-align:right;flex-shrink:0}
+.dtt{margin-top:8px;padding:8px 12px;background:var(--danger-dim);border-radius:9px;font-size:.85rem;font-weight:600;color:var(--danger);display:inline-flex;align-items:center;gap:7px}
+.fc{background:linear-gradient(135deg,var(--card) 0%,color-mix(in srgb,var(--card) 80%,var(--acc)) 100%);border:2px solid var(--acc);border-radius:16px;padding:24px;text-align:center;margin:20px 0}
+.fsn{font-size:3.2rem;font-weight:700;color:var(--acc);line-height:1;font-family:'Cormorant Garamond',serif}
+.fsl{font-size:.82rem;color:var(--fg3);margin-top:3px}
+.fcl{margin-top:8px}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.si{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;transition:all .2s;flex-wrap:wrap}
+.si:hover{border-color:var(--acc);transform:translateY(-1px);box-shadow:var(--shadow)}
+.sii{flex:1;min-width:0}
+.sii h3{font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sii p{font-size:.78rem;color:var(--fg3);margin-top:2px;word-wrap:break-word;overflow-wrap:break-word}
+.sis{font-size:1.5rem;font-weight:700;color:var(--acc);min-width:46px;text-align:center;font-family:'Cormorant Garamond',serif;flex-shrink:0}
+.sia{display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap}
+.es{text-align:center;padding:50px 16px;color:var(--fg3)}
+.es i{font-size:2.8rem;margin-bottom:12px;color:var(--brd);display:block}
+.es p{font-size:.95rem}
+#tb{position:fixed;top:66px;right:12px;z-index:2000;display:flex;flex-direction:column;gap:6px;max-width:calc(100vw - 24px)}
+.to{padding:10px 16px;border-radius:10px;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:8px;min-width:220px;max-width:360px;box-shadow:var(--shadow);animation:ti .35s ease;transition:all .3s;background:var(--card);border:1px solid var(--brd);color:var(--fg)}
+.to.out{opacity:0;transform:translateX(40px)}
+.to-ok{border-color:var(--ok);color:var(--ok)}.to-er{border-color:var(--danger);color:var(--danger)}.to-wa{border-color:var(--acc);color:var(--acc)}
+@keyframes ti{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1500;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
+.mo.open{opacity:1;pointer-events:auto}
+.mb{background:var(--card);border:1px solid var(--brd);border-radius:16px;padding:24px;max-width:420px;width:100%;transform:scale(.92);transition:transform .25s;box-shadow:var(--shadow)}
+.mo.open .mb{transform:scale(1)}
+.mb h3{font-size:1.15rem;margin-bottom:8px;word-wrap:break-word;overflow-wrap:break-word}
+.mb p{font-size:.88rem;color:var(--fg2);line-height:1.6;margin-bottom:18px;word-wrap:break-word;overflow-wrap:break-word}
+.mbb{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+#print-area{display:none}
+.stb{position:fixed;bottom:20px;right:20px;width:42px;height:42px;border-radius:11px;background:var(--card);border:1px solid var(--brd);color:var(--acc);font-size:1rem;cursor:pointer;z-index:50;display:none;align-items:center;justify-content:center;transition:all .2s;box-shadow:var(--shadow)}
+.stb:hover{background:var(--acc);color:#1a1612}
+.stb.vis{display:flex}
+.smb{display:none}
+@media(max-width:768px){.fm{grid-template-columns:repeat(2,1fr)}.tc{grid-template-columns:1fr}.sr{flex-direction:column;gap:10px}.sg{width:100%}.sd{align-self:flex-start}.sgb{height:34px;font-size:.72rem}.hero h1{font-size:2rem}.smb{display:inline-flex}.hide-sm{display:none}}
+@media(max-width:480px){.page{padding:12px}header{height:50px;padding:0 10px}.logo{font-size:1.15rem;gap:6px}.hide-sm{display:none}.btn-sm{padding:6px 8px;font-size:.75rem}.btn-icon{padding:6px 7px}.theme-btn{width:34px;height:34px;font-size:.9rem}.hdr-actions{gap:4px}.hero{padding:20px 0 14px}.hero h1{font-size:1.7rem}.hero p{font-size:.88rem}.actions-grid{grid-template-columns:1fr;gap:10px;margin:16px 0 24px}.fm{grid-template-columns:1fr}.sc{padding:12px;border-radius:12px}.sc-t{font-size:.88rem}.sg{width:100%}.sgb{height:38px;font-size:.75rem}.sgl{width:16px;font-size:.6rem}.cub{width:34px;height:34px;font-size:.9rem}.sw{gap:6px}.swl{min-width:50px;font-size:.68rem}.fc{padding:18px;border-radius:12px}.fsn{font-size:2.6rem}.si{flex-direction:column;align-items:stretch;gap:8px}.sis{text-align:left;min-width:auto}.sia{justify-content:flex-end}.mb{padding:18px;border-radius:14px}.mb h3{font-size:1.05rem}.mb p{font-size:.84rem;margin-bottom:14px}.to{min-width:180px;max-width:calc(100vw - 24px);font-size:.78rem;padding:8px 12px}.ps h2{font-size:1.2rem}.ps p,.ps li{font-size:.85rem}.st{font-size:.75rem}.st th,.st td{padding:5px 4px}.ct{font-size:.82rem}.ct th,.ct td{padding:7px 8px}.dr .dt{min-width:120px;flex:1 1 120px;font-size:.76rem}.dr .dc{width:48px;font-size:.76rem}.dr .dd{font-size:.76rem}#tb{right:8px;top:58px}.stb{width:38px;height:38px;bottom:14px;right:14px}}
+</style>
+</head>
+<body>
+<div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div>
+<header>
+  <div class="logo" onclick="goPage('home')"><i class="fa-solid fa-mug-hot"></i><span>Cupping Pro</span></div>
+  <div class="hdr-actions">
+    <div id="hfa" style="display:none;gap:5px" class="hdr-actions">
+      <button class="btn btn-sm" onclick="doSave()"><i class="fa-solid fa-floppy-disk"></i><span class="hide-sm">Сохранить</span></button>
+      <button class="btn btn-sm" onclick="expFormJson()"><i class="fa-solid fa-download"></i><span class="hide-sm">JSON</span></button>
+      <button class="btn btn-sm" onclick="expPdf()"><i class="fa-solid fa-file-pdf"></i><span class="hide-sm">PDF</span></button>
+      <button class="btn btn-sm btn-accent smb" onclick="sharePdf()"><i class="fa-solid fa-share-nodes"></i><span class="hide-sm">Поделиться</span></button>
+    </div>
+    <button class="theme-btn" onclick="togTheme()" aria-label="Тема"><i class="fa-solid fa-moon"></i></button>
+  </div>
+</header>
+
+<section id="page-home" class="page active">
+  <div class="hero"><h1>Каппинг кофе</h1><p>Профессиональная дегустация по протоколу<br>Specialty Coffee Association</p></div>
+  <div class="actions-grid">
+    <div class="action-card" onclick="newForm()"><i class="fa-solid fa-plus"></i><h3>Новая форма</h3><span>Создать бланк каппинга</span></div>
+    <div class="action-card" onclick="goPage('saved')"><i class="fa-solid fa-folder-open"></i><h3>Сохранённые</h3><span>Открыть ранее сохранённые формы</span></div>
+    <div class="action-card" onclick="trigImp()"><i class="fa-solid fa-file-import"></i><h3>Импорт</h3><span>Загрузить форму из файла</span></div>
+  </div>
+
+  <div class="ps">
+    <h2>Протокол проведения каппинга</h2>
+    <p>Каппинг — профессиональная дегустация кофе с целью раскрыть его ароматические и вкусовые характеристики. Важно при проведении каппинга соблюдать равные условия для каждого образца кофе.</p>
+    <p>Цель протокола проведения каппинга — определение качества продукта, в результате чего анализируют и описывают аромат, вкус, послевкусие, кислотность, тело и баланс, сладость, однородность и чистоту, а также наличие или отсутствие дефектов в каждой чашке по числовой шкале (от 0 до 100 баллов). Баллы суммируются и выставляется общая оценка для каждого образца.</p>
+  </div>
+
+  <div class="ps">
+    <h2>Шкала оценки SCA</h2>
+    <p>Оценка по форме Specialty Coffee Association описывает уровни качества с шагом 0,25 балла между значениями от 6 до 10. Начало категории Speciality Coffee — 7,25 балла.</p>
+    <table class="st">
+      <tr><th>6.00</th><th>7.00</th><th>8.00</th><th>9.00</th></tr>
+      <tr><td>6.25</td><td>7.25</td><td>8.25</td><td>9.25</td></tr>
+      <tr><td>6.50</td><td>7.50</td><td>8.50</td><td>9.50</td></tr>
+      <tr><td>6.75</td><td>7.75</td><td>8.75</td><td>9.75</td></tr>
+      <tr><td style="color:var(--fg3)">Хороший</td><td style="color:var(--fg2)">Очень хороший</td><td style="color:var(--ok)">Отличный</td><td style="color:var(--acc)">Выдающийся</td></tr>
+    </table>
+    <p>Чем конкретнее вы идентифицируете во вкусо-ароматическом профиле какой-то конкретный фрукт, цветок и т.д., тем выше оценка.</p>
+    <div class="note-box">
+      <strong>Важно о шкале оценок:</strong> Параметры «Аромат», «Букет», «Послевкусие», «Кислотность», «Тело», «Баланс» и «Общая оценка» оцениваются по непрерывной шкале с шагом 0,25 балла (от 6.00 до 10.00). Параметры «Сладость», «Однородность» и «Чистая чашка» оцениваются <strong>иначе</strong> — по принципу «зачёт/незачёт» для каждой из 5 чашек: 2 балла за каждую чашку без дефекта (максимум 10 баллов). Это не опечатка протокола, а установленное SCA правило: эти три параметра отражают не степень выраженности качества, а его наличие или отсутствие в каждой отдельной чашке, поэтому градация 0,25 здесь не применяется.
+    </div>
+  </div>
+
+  <div class="ps">
+    <h2>Необходимое оборудование и инвентарь</h2>
+    <ul>
+      <li>Весы с таймером (либо отдельно секундомер) с шагом 0,1 г</li>
+      <li>Ложки для каппинга</li>
+      <li>Кофемолка</li>
+      <li>Чашки для заваривания кофе, без запаха, комнатной температуры (175–225 мл)</li>
+      <li>Стаканы для чистой горячей воды</li>
+      <li>Стаканы для сбора кофейной пены</li>
+      <li>Стакан для сплёвывания образцов кофе (на каппинге кофе не глотают, а сплёвывают в стакан или специализированное устройство — спитун)</li>
+      <li>Колесо вкусов кофе (SCA Coffee Tasters Flavor Wheel)</li>
+    </ul>
+  </div>
+
+  <div class="ps">
+    <h2>Необходимые расходные материалы, кофе и вода</h2>
+    <ul>
+      <li>Бумажные салфетки (используются для отстукивания ложек после их очистки от кофе в горячей воде)</li>
+      <li>Кофе однородного помола (70% частиц приходится на размер сита 850 mμ), в соотношении 6 г на 100 мл воды</li>
+      <li>Вода — чистая, без запаха (не дистиллированная). TDS 125–175 ppm. Температура заваривания 92–94 ºC</li>
+      <li>Стаканы с водой для ополаскивания ротовой полости до, во время и после дегустации</li>
+      <li>Форма для каппинга</li>
+      <li>Ручка, карандаш для заполнения формы для каппинга</li>
+    </ul>
+  </div>
+
+  <div class="ps">
+    <h2>Последовательность действий</h2>
+    <ul class="stepsBrewing">
+      <li><span class="sn">1</span><strong>Подготовка рабочего места</strong> — расстановка оборудования и инвентаря, помол кофе, нагрев воды до необходимой температуры.</li>
+      <li><span class="sn">2</span><strong>Аромат сухого и заваренного кофе. Fragrance</strong> — оценка аромата молотого сухого кофе (оценивается в первые 15 минут после помола, желательно). Оценивается обычно только интенсивность, баллы за оценку сухого аромата не выставляются. После того как кофе смолот и находится в чашке для оценки, к чашкам больше не рекомендуется прикасаться и перемещать их.</li>
+      <li><span class="sn">3</span><strong>Залив водой стаканов без кофе</strong> для дальнейшего споласкивания ложек для каппинга (ложки для каппинга ополаскиваются каждый раз перед тем как вновь погрузить их в чашку с заваренным кофе).</li>
+      <li><span class="sn">4</span><strong>Залив чашек водой</strong> в равных количествах для каждого образца кофе до краёв используемой посуды. Важно проводить дальнейшую оценку образцов кофе в той последовательности, в которой происходил процесс заваривания. Нельзя доливать воду после заваривания.</li>
+      <li><span class="sn">5</span><strong>Вскрытие шапки (4 минуты после заваривания)</strong> — молотые частицы кофе, образовавшиеся на поверхности чашки в виде корки, вскрывают 3 круговыми движениями ложки для каппинга и оценивают аромат. <strong>Aroma</strong> — характер аромата только что залитого горячей водой кофе, после вскрытия шапочки и очищенного кофе.</li>
+      <li><span class="sn">6</span><strong>Полная очистка чашек от шапки</strong> двумя ложками для каппинга за один приём.</li>
+      <li><span class="sn">7</span><strong>Оценка вкусовых характеристик (8–10 минут после заваривания, 70–71 ºC)</strong> — кофе при помощи ложки для каппинга необходимо втянуть с воздухом в полость рта таким образом, чтобы охватить большую его площадь, насколько это возможно, особенно язык и верхнее небо. В это время происходит оценка букета и послевкусия:
+        <ul>
+          <li><strong>Flavor (Букет)</strong> — основной характер кофе. Комбинированное впечатление от всех вкусовых ощущений во время проведения дегустации: воспринимаемых вкусовыми рецепторами полости рта, и ретроназальных ароматов, воспринимаемых органом обоняния в носовой полости. Оценка этого параметра должна учитывать интенсивность, качество и сложность комбинированного вкуса и аромата оцениваемого образца.</li>
+          <li><strong>Aftertaste (Послевкусие)</strong> — продолжительность положительных вкусовых качеств (вкус и аромат), воспринимаемых задней частью неба и оставшихся после проглатывания или сплёвывания кофе. Чем короче и/или неприятней послевкусие, тем ниже оценочные баллы.</li>
+        </ul>
+      </li>
+      <li><span class="sn">8</span><strong>При температуре 60 ºC</strong> оценивается кислотность, тело и баланс:
+        <ul>
+          <li><strong>Acidity (Кислотность)</strong> — основной параметр вкуса, характеризующийся содержанием органических кислот с положительным, ярким, свежим и приятным вкусом. Положительная кислотность описывается как «яркий», отрицательная — «кислый». Избыточная кислотность может иметь отрицательное влияние на вкусовой профиль образца. Горизонтальная шкала отображает интенсивность (второстепенный критерий оценки), В баллах — качество кислотности (основной критерий оценки).</li>
+          <li><strong>Body (Тело)</strong> — совокупность физических свойств кофе в результате тактильных ощущений, воспринимаемых полостью рта во время дегустации. В баллах отображаем качество тела (основной критерий оценки), Горизонтальная шкала — плотность/интенсивность (второстепенный критерий оценки).</li>
+          <li><strong>Balance (Баланс)</strong> — гармоничная комбинация двух и более параметров оценки кофе. Оценка того, как взаимодействуют различные аспекты вкуса, послевкусия, кислотности и тела вместе, дополняют или контрастируют друг с другом.</li>
+        </ul>
+      </li>
+      <li><span class="sn">9</span><strong>При температуре 40 ºC</strong> на остывшем кофе оцениваются сладость, однородность и чистая чашка:
+        <ul>
+          <li><strong>Sweetness (Сладость)</strong> — относится к приятной полноте вкуса, её восприятие является результатом наличия определенных углеводов в кофе. 2 балла за каждую чашку из 5 (максимум 10 баллов).</li>
+          <li><strong>Uniformity (Однородность)</strong> — последовательность вкуса и аромата от чашки к чашке внутри оцениваемого образца. 2 балла за каждую чашку из 5 (максимум 10 баллов).</li>
+          <li><strong>Clean Cup (Чистая чашка)</strong> — совокупность физических и вкусовых свойств кофе, свободного от примесей, посторонних привкусов, грязи, дефектов от первого глотка до послевкусия. 2 балла за каждую чашку из 5 (максимум 10 баллов).</li>
+        </ul>
+      </li>
+      <li><span class="sn">10</span><strong>Общая оценка (Overall)</strong> — индивидуальная оценка образца в восприятии каждого отдельного участника дегустации. Учитывается общее впечатление, учитывающее все аспекты咖啡.</li>
+      <li><span class="sn">11</span><strong>Распознание и запись дефектов</strong> — дефекты — отрицательные вкусы (ароматы), которые снижают качество кофе. Существует 2 типа дефектов:
+        <ul>
+          <li><strong>Taint</strong> — неприятный, испорченный, но не доминирующий вкус (аромат). Оценивается в 2 балла.</li>
+          <li><strong>Fault</strong> — дефект, повреждение — подавляющий неприятный, испорченный вкус (аромат), который делает образец непригодным для дальнейшего использования. Оценивается в 4 балла.</li>
+        </ul>
+        Сначала дефект классифицируют, затем определяют характер. Далее отмечается количество чашек, в которых обнаружен дефект, и умножается на 2 или 4 в зависимости от интенсивности найденного дефекта. Оценка за дефекты вычитается из общей суммы баллов.
+      </li>
+      <li><span class="sn">12</span><strong>Подсчёт баллов</strong> — после того как выставлены все баллы при оценке образцов кофе и вычтены баллы за дефекты, происходит подсчёт баллов. Окончательная оценка показывает качество кофе.</li>
+    </ol>
+  </div>
+
+  <div class="ps">
+    <h2>Итоговая оценка (классификация качества)</h2>
+    <table class="ct">
+      <tr><th>Баллы</th><th>Классификация</th></tr>
+      <tr><td>90.0 – 100</td><td><span class="cb cb-o">Выдающийся</span></td></tr>
+      <tr><td>85 – 89.99</td><td><span class="cb cb-e">Отличный</span></td></tr>
+      <tr><td>80 – 84.99</td><td><span class="cb cb-v">Очень хороший</span></td></tr>
+      <tr><td>&lt; 80</td><td><span class="cb cb-b">Ниже качества Speciality</span></td></tr>
+    </table>
+    <p>Часто при оценке образцов кофе прибегают к помощи колеса вкусов кофе (SCA Coffee Tasters Flavor Wheel). Колесо вкусов помогает более точно определить оттенки вкусов, которые вы ощущаете.</p>
+  </div>
+  <div style="height:30px"></div>
+</section>
+
+<section id="page-form" class="page"><div id="fcon"></div></section>
+
+<section id="page-saved" class="page">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+    <button class="btn btn-sm" onclick="goPage('home')"><i class="fa-solid fa-arrow-left"></i> <span class="hide-sm">Назад</span></button>
+    <h2 style="font-size:1.35rem;flex:1">Сохранённые формы</h2>
+  </div>
+  <div id="slist"></div>
+</section>
+
+<div id="tb"></div>
+<div class="mo" id="modal"><div class="mb"><h3 id="mt"></h3><p id="mm"></p><div class="mbb" id="mbs"></div></div></div>
+<input type="file" id="ifile" accept=".json" hidden>
+<button class="stb" id="stb" onclick="window.scrollTo({top:0})" aria-label="Наверх"><i class="fa-solid fa-chevron-up"></i></button>
+<div id="print-area"></div>
+
+<footer style="text-align:center; padding: 24px 16px 16px; color: var(--fg3); font-family: 'Nunito Sans', sans-serif; font-size: 0.78rem; border-top: 1px solid var(--brd); margin-top: 32px;">
+  <span style="opacity:0.8;">© 2025</span>
+  <a href="https://t.me/romkalants" target="_blank" style="color: var(--acc); font-weight:600; text-decoration: none;">Roman Lantsov</a>
+</footer>
+
+<script>
+var SK='cp_forms_v2',MX=10,SC=[];
+for(var i=600;i<=1000;i+=25)SC.push(i/100);
+var S={pg:'home',th:localStorage.getItem('cp_th')||'dark',forms:[],cur:null,eid:null,snp:null};
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function td(){return new Date().toISOString().split('T')[0]}
+function fd(d){if(!d)return '';var p=d.split('-');return p[2]+'.'+p[1]+'.'+p[0]}
+function gc(s){if(s>=90)return{l:'Выдающийся',c:'cb-o'};if(s>=85)return{l:'Отличный',c:'cb-e'};if(s>=80)return{l:'Очень хороший',c:'cb-v'};return{l:'Ниже Speciality',c:'cb-b'}}
+function ef(){return{id:'',nm:'',dt:td(),tn:'',sn:'',ds:'',rd:'',fdry:'',fbrew:'',fas:0,fls:0,fln:'',ats:0,atn:'',aci:50,acs:0,acn:'',bdy:50,bds:0,bdn:'',bls:0,bln:'',uc:[1,1,1,1,1],cc:[1,1,1,1,1],swc:[1,1,1,1,1],ovs:0,ovn:'',df:[],fs:0,roastDate:'',waterTDS:'',brewTemp:''}}
+function sp(f){return JSON.stringify({nm:f.nm,dt:f.dt,tn:f.tn,sn:f.sn,ds:f.ds,rd:f.rd,fdry:f.fdry,fbrew:f.fbrew,fas:f.fas,fls:f.fls,fln:f.fln,ats:f.ats,atn:f.atn,aci:f.aci,acs:f.acs,acn:f.acn,bdy:f.bdy,bds:f.bds,bdn:f.bdn,bls:f.bls,bln:f.bln,uc:f.uc,cc:f.cc,swc:f.swc,ovs:f.ovs,ovn:f.ovn,df:f.df,roastDate:f.roastDate,waterTDS:f.waterTDS,brewTemp:f.brewTemp})}
+function chg(){return S.cur&&S.snp?sp(S.cur)!==S.snp:false}
+function es(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function cbl(s){var c=gc(s);return'<span class="cb '+c.c+'">'+c.l+'</span>'}
+
+function togTheme(){S.th=S.th==='dark'?'light':'dark';localStorage.setItem('cp_th',S.th);apTh()}
+function apTh(){document.documentElement.setAttribute('data-theme',S.th);document.querySelector('.theme-btn i').className=S.th==='dark'?'fa-solid fa-moon':'fa-solid fa-sun'}
+
+function goPage(p){
+  S.pg=p;
+  document.querySelectorAll('.page').forEach(function(e){e.classList.remove('active')});
+  document.getElementById('page-'+p).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  document.getElementById('hfa').style.display=p==='form'?'flex':'none';
+  if(p==='saved')renSaved();
+  if(p==='form')renForm();
+}
+
+function toast(m,t){
+  var b=document.getElementById('tb'),e=document.createElement('div');
+  e.className='to'+(t==='ok'?' to-ok':t==='er'?' to-er':t==='wa'?' to-wa':'');
+  var ic={ok:'fa-circle-check',er:'fa-circle-xmark',wa:'fa-triangle-exclamation',info:'fa-circle-info'};
+  e.innerHTML='<i class="fa-solid '+(ic[t]||ic.info)+'"></i><span>'+m+'</span>';
+  b.appendChild(e);setTimeout(function(){e.classList.add('out');setTimeout(function(){e.remove()},300)},3200);
+}
+
+function showM(ti,mg,bs){
+  var ov=document.getElementById('modal');
+  document.getElementById('mt').textContent=ti;
+  document.getElementById('mm').innerHTML=mg;
+  var bb=document.getElementById('mbs');bb.innerHTML='';
+  bs.forEach(function(b){
+    var btn=document.createElement('button');btn.className='btn'+(b.c?' '+b.c:'');btn.textContent=b.t;
+    btn.onclick=function(){hidM();if(b.a)b.a()};bb.appendChild(btn);
+  });
+  ov.classList.add('open');
+}
+function hidM(){document.getElementById('modal').classList.remove('open')}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===document.getElementById('modal'))hidM()});
+
+function ldF(){try{S.forms=JSON.parse(localStorage.getItem(SK))||[]}catch(e){S.forms=[]}S.forms.forEach(function(f){if('fragranceBreak' in f&&!('fbrew' in f)){f.fbrew=f.fragranceBreak;delete f.fragranceBreak}})}
+function svF(){localStorage.setItem(SK,JSON.stringify(S.forms))}
+
+function calc(f){
+  var s=0;s+=f.fas||0;s+=f.fls||0;s+=f.ats||0;s+=f.acs||0;s+=f.bds||0;s+=f.bls||0;
+  s+=(f.uc.filter(Boolean).length)*2;s+=(f.cc.filter(Boolean).length)*2;s+=(f.swc.filter(Boolean).length)*2;s+=f.ovs||0;
+  var dt=0;(f.df||[]).forEach(function(d){dt+=(parseInt(d.cups)||0)*(d.type==='fault'?4:2)});
+  f.fs=Math.max(0,Math.round((s-dt)*100)/100);return f.fs;
+}
+
+function sgH(fld,val){
+  var h='<div class="sr"><div class="sd"><div class="v'+(val?' a':'')+'">'+(val?val.toFixed(2):'--')+'</div><div class="u">баллов</div></div><div class="sg">';
+  for(var i=0;i<SC.length;i++){
+    var v=SC[i],ip=Math.floor(v),nr=i>0&&Math.floor(SC[i-1])!==ip;
+    if(nr)h+='</div><div class="sgr"><span class="sgl">'+ip+'</span>';
+    else if(i===0)h+='<div class="sgr"><span class="sgl">6</span>';
+    h+='<button type="button" class="sgb'+(v===val?' sl':'')+'" data-f="'+fld+'" data-v="'+v+'">'+(v%1).toFixed(2).slice(1)+'</button>';
+  }
+  return h+'</div></div></div>';
+}
+function cpH(fld,vals){
+  var h='<div class="cr">';for(var i=0;i<5;i++)h+='<button type="button" class="cub'+(vals[i]?' on':'')+'" data-cf="'+fld+'" data-ci="'+i+'"><i class="fa-solid fa-mug-hot"></i></button>';
+  return h+'<span class="cst" data-cs="'+fld+'">'+vals.filter(Boolean).length*2+' / 10</span></div>';
+}
+function drH(d,i){
+  return'<div class="dr"><select class="dt" data-di="'+i+'"><option value="taint"'+(d.type==='taint'?' selected':'')+'>Лёгкий (Taint) -2</option><option value="fault"'+(d.type==='fault'?' selected':'')+'>Сильный (Fault) -4</option></select><input type="number" class="dc" data-di="'+i+'" min="0" max="5" value="'+(d.cups||0)+'" placeholder="Чашек"><input type="text" class="dd" data-di="'+i+'" value="'+es(d.desc||'')+'" placeholder="Описание"><span class="dv" data-di="'+i+'">-'+((d.type==='fault'?4:2)*(parseInt(d.cups)||0))+'</span><button class="btn btn-sm btn-danger btn-icon" onclick="rmDef('+i+')"><i class="fa-solid fa-xmark"></i></button></div>';
+}
+function dtH(f){var t=0;(f.df||[]).forEach(function(d){t+=(d.type==='fault'?4:2)*(parseInt(d.cups)||0)});return'<div class="dtt"><i class="fa-solid fa-circle-minus"></i> Вычет: -'+t+' баллов</div>'}
+
+function renForm(){
+  var f=S.cur;if(!f)return;
+  document.getElementById('fcon').innerHTML=
+  '<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap"><button class="btn btn-sm" onclick="cfLeave()"><i class="fa-solid fa-arrow-left"></i> <span class="hide-sm">Назад</span></button><h2 style="font-size:1.2rem;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Каппинг'+(f.ds?' — '+f.ds:'')+'</h2></div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-user"></i> Информация</div><div class="fm"><div class="fg"><label>Имя</label><input type="text" id="fnm" value="'+es(f.nm)+'" placeholder="Ваше имя"></div><div class="fg"><label>Дата</label><input type="date" id="fdt" value="'+f.dt+'"></div><div class="fg"><label>Стол №</label><input type="text" id="ftn" value="'+es(f.tn)+'" placeholder="Номер стола"></div><div class="fg"><label>Образец №</label><input type="text" id="fsn" value="'+es(f.sn)+'" placeholder="Номер образца"></div><div class="fg"><label>Описание образца</label><input type="text" id="fds" value="'+es(f.ds)+'" placeholder="Страна, регион, ферма"></div><div class="fg"><label>Степень обжарки</label><input type="text" id="frd" value="'+es(f.rd)+'" placeholder="Например: средняя, светлая"></div><div class="fg"><label>Дата обжарки</label><input type="date" id="froast" value="'+es(f.roastDate)+'"></div><div class="fg"><label>Минерализация воды</label><input type="text" id="fwater" value="'+es(f.waterTDS)+'" placeholder="TDS, ppm"></div><div class="fg"><label>Температура заваривания</label><input type="text" id="fbrewtemp" value="'+es(f.brewTemp)+'" placeholder="°C"></div></div></div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-wind"></i> Аромат сухой / заваренный</div><div class="tc" style="margin-bottom:10px"><div class="fg"><label>Сухой</label><textarea id="ffdry" placeholder="Заметки о сухом аромате">'+es(f.fdry)+'</textarea></div><div class="fg"><label>Заваренный</label><textarea id="ffbrew" placeholder="Заметки о заваренном">'+es(f.fbrew)+'</textarea></div></div>'+sgH('fas',f.fas)+'</div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-glass-water"></i> Букет (Flavor)</div>'+sgH('fls',f.fls)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="ffln" placeholder="Описание букета">'+es(f.fln)+'</textarea></div></div></div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-hourglass-half"></i> Послевкусие (Aftertaste)</div>'+sgH('ats',f.ats)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="fatn" placeholder="Описание послевкусия">'+es(f.atn)+'</textarea></div></div></div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-lemon"></i> Кислотность (Acidity)</div><div class="sc-s">Горизонтальная — интенсивность, в баллах — качество</div><div class="sw"><span class="swl">Низкая</span><input type="range" min="0" max="100" value="'+f.aci+'" id="faci"><span class="swl r">Высокая</span></div>'+sgH('acs',f.acs)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="facn" placeholder="Описание кислотности">'+es(f.acn)+'</textarea></div></div></div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-droplet"></i> Тело (Body)</div><div class="sc-s">Горизонтальная — плотность, в баллах — качество</div><div class="sw"><span class="swl">Лёгкое</span><input type="range" min="0" max="100" value="'+f.bdy+'" id="fbdi"><span class="swl r">Тяжёлое</span></div>'+sgH('bds',f.bds)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="fbdn" placeholder="Описание тела">'+es(f.bdn)+'</textarea></div></div></div>'+
+  '<div class="tc"><div class="sc"><div class="sc-t"><i class="fa-solid fa-equals"></i> Однородность</div><div class="sc-s">2 балла за чашку из 5</div>'+cpH('uc',f.uc)+'</div><div class="sc"><div class="sc-t"><i class="fa-solid fa-scale-balanced"></i> Баланс</div>'+sgH('bls',f.bls)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="fbln" placeholder="Описание баланса">'+es(f.bln)+'</textarea></div></div></div><div class="sc"><div class="sc-t"><i class="fa-solid fa-soap"></i> Чистая чашка</div><div class="sc-s">2 балла за чашку из 5</div>'+cpH('cc',f.cc)+'</div><div class="sc"><div class="sc-t"><i class="fa-solid fa-candy-cane"></i> Сладость</div><div class="sc-s">2 балла за чашку из 5</div>'+cpH('swc',f.swc)+'</div></div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-star"></i> Общая оценка (Overall)</div>'+sgH('ovs',f.ovs)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="fovn" placeholder="Общее впечатление">'+es(f.ovn)+'</textarea></div></div></div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-bug"></i> Дефекты</div><div class="sc-s">Taint (-2 за чашку), Fault (-4 за чашку)</div><div id="dfl">'+(f.df||[]).map(function(d,i){return drH(d,i)}).join('')+'</div><button class="btn btn-sm" onclick="adDef()" style="margin-top:6px"><i class="fa-solid fa-plus"></i> Добавить дефект</button><div id="dtw">'+(f.df&&f.df.length?dtH(f):'')+'</div></div>'+
+  '<div class="fc"><div class="fsl">Итоговая оценка</div><div class="fsn" id="fsc">'+f.fs.toFixed(2)+'</div><div class="fcl" id="fcl">'+cbl(f.fs)+'</div></div><div style="height:50px"></div>';
+  atchL();
+}
+
+function atchL(){
+  var f=S.cur;
+  [{k:'nm',id:'fnm'},{k:'dt',id:'fdt'},{k:'tn',id:'ftn'},{k:'sn',id:'fsn'},{k:'ds',id:'fds'},{k:'rd',id:'frd'},{k:'roastDate',id:'froast'},{k:'waterTDS',id:'fwater'},{k:'brewTemp',id:'fbrewtemp'}].forEach(function(o){var el=document.getElementById(o.id);if(el)el.oninput=function(){f[o.k]=el.value}});
+  [{k:'fdry',id:'ffdry'},{k:'fbrew',id:'ffbrew'},{k:'fln',id:'ffln'},{k:'atn',id:'fatn'},{k:'acn',id:'facn'},{k:'bdn',id:'fbdn'},{k:'bln',id:'fbln'},{k:'ovn',id:'fovn'}].forEach(function(o){var el=document.getElementById(o.id);if(el)el.oninput=function(){f[o.k]=el.value}});
+  var ai=document.getElementById('faci');if(ai)ai.oninput=function(){f.aci=parseInt(ai.value)};
+  var bd=document.getElementById('fbdi');if(bd)bd.oninput=function(){f.bdy=parseInt(bd.value)};
+  document.querySelectorAll('.sgb').forEach(function(btn){btn.onclick=function(){
+    var fld=btn.getAttribute('data-f'),v=parseFloat(btn.getAttribute('data-v'));f[fld]=v;
+    var w=btn.closest('.sr');w.querySelectorAll('.sgb').forEach(function(b){b.classList.remove('sl')});btn.classList.add('sl');
+    var vd=w.querySelector('.v');vd.textContent=v.toFixed(2);vd.classList.add('a');upF();
+  }});
+  document.querySelectorAll('.cub').forEach(function(btn){btn.onclick=function(){
+    var fld=btn.getAttribute('data-cf'),ci=parseInt(btn.getAttribute('data-ci'));f[fld][ci]=!f[fld][ci];btn.classList.toggle('on',f[fld][ci]);
+    document.querySelector('[data-cs="'+fld+'"]').textContent=f[fld].filter(Boolean).length*2+' / 10';upF();
+  }});
+  var dl=document.getElementById('dfl');if(dl){
+    var hd=function(e){var di=parseInt(e.target.getAttribute('data-di'));if(isNaN(di))return;var d=f.df[di];
+      if(e.target.classList.contains('dt'))d.type=e.target.value;
+      if(e.target.classList.contains('dc'))d.cups=parseInt(e.target.value)||0;
+      if(e.target.classList.contains('dd'))d.desc=e.target.value;
+      var vs=document.querySelector('.dv[data-di="'+di+'"]');if(vs)vs.textContent='-'+((d.type==='fault'?4:2)*d.cups);upDt();upF();
+    };dl.addEventListener('change',hd);dl.addEventListener('input',hd);
+  }
+}
+function upF(){calc(S.cur);var el=document.getElementById('fsc');if(el)el.textContent=S.cur.fs.toFixed(2);var cl=document.getElementById('fcl');if(cl)cl.innerHTML=cbl(S.cur.fs)}
+function upDt(){var w=document.getElementById('dtw');if(w)w.innerHTML=dtH(S.cur)}
+function adDef(){S.cur.df.push({type:'taint',cups:0,desc:''});document.getElementById('dfl').insertAdjacentHTML('beforeend',drH(S.cur.df[S.cur.df.length-1],S.cur.df.length-1))}
+function rmDef(i){S.cur.df.splice(i,1);document.getElementById('dfl').innerHTML=S.cur.df.map(function(d,j){return drH(d,j)}).join('');upDt();upF()}
+
+function syncDom(){
+  var f=S.cur;if(!f)return;
+  f.nm=(document.getElementById('fnm')||{}).value||'';f.dt=(document.getElementById('fdt')||{}).value||td();
+  f.tn=(document.getElementById('ftn')||{}).value||'';f.sn=(document.getElementById('fsn')||{}).value||'';
+  f.ds=(document.getElementById('fds')||{}).value||'';f.rd=(document.getElementById('frd')||{}).value||'';
+  f.roastDate=(document.getElementById('froast')||{}).value||'';
+  f.waterTDS=(document.getElementById('fwater')||{}).value||'';
+  f.brewTemp=(document.getElementById('fbrewtemp')||{}).value||'';
+  f.fdry=(document.getElementById('ffdry')||{}).value||'';f.fbrew=(document.getElementById('ffbrew')||{}).value||'';
+  f.fln=(document.getElementById('ffln')||{}).value||'';f.atn=(document.getElementById('fatn')||{}).value||'';
+  f.aci=parseInt((document.getElementById('faci')||{}).value)||50;f.acn=(document.getElementById('facn')||{}).value||'';
+  f.bdy=parseInt((document.getElementById('fbdi')||{}).value)||50;f.bdn=(document.getElementById('fbdn')||{}).value||'';
+  f.bln=(document.getElementById('fbln')||{}).value||'';f.ovn=(document.getElementById('fovn')||{}).value||'';
+  calc(f);
+}
+
+function doSave(){
+  syncDom();var f=S.cur;
+  var hs=f.fas||f.fls||f.ats||f.acs||f.bds||f.bls||f.ovs;
+  if(!f.ds&&!f.sn&&!hs){toast('Заполните хотя бы описание или одну оценку','wa');return false}
+  var copy=JSON.parse(JSON.stringify(f));
+  if(S.eid){var idx=-1;for(var i=0;i<S.forms.length;i++){if(S.forms[i].id===S.eid){idx=i;break}}if(idx>=0)S.forms[idx]=copy;else{copy.id=uid();S.forms.push(copy)}}
+  else{copy.id=uid();S.forms.push(copy);S.eid=copy.id}
+  svF();S.snp=sp(f);toast('Форма сохранена','ok');return true;
+}
+
+function cfLeave(){
+  syncDom();
+  if(chg()){
+    if(S.eid){showM('Внести изменения?','Внести изменения в сохранённую форму «'+(S.cur.ds||'Образец '+S.cur.sn)+'»?',[{t:'Не сохранять',a:function(){goH()}},{t:'Сохранить',c:'btn-accent',a:function(){if(doSave())goH()}}])}
+    else{showM('Несохранённые данные','Сохранить форму перед выходом?',[{t:'Не сохранять',a:function(){goH()}},{t:'Сохранить',c:'btn-accent',a:function(){if(doSave())goH()}}])}
+  }else{goH()}
+}
+function goH(){S.cur=null;S.eid=null;S.snp=null;goPage('home')}
+
+function newForm(){
+  if(S.forms.length>=MX){showM('Лимит форм','Достигнут лимит ('+MX+').',[{t:'Закрыть'},{t:'К сохранённым',c:'btn-accent',a:function(){goPage('saved')}}]);return}
+  S.cur=ef();S.eid=null;S.snp=sp(S.cur);goPage('form');
+}
+function openF(id){
+  var f=null;for(var i=0;i<S.forms.length;i++){if(S.forms[i].id===id){f=S.forms[i];break}}
+  if(!f){toast('Форма не найдена','er');return}
+  S.cur=JSON.parse(JSON.stringify(f));S.eid=id;S.snp=sp(S.cur);goPage('form');
+}
+function delF(id){
+  var f=null;for(var i=0;i<S.forms.length;i++){if(S.forms[i].id===id){f=S.forms[i];break}}
+  var nm=f?(f.ds||'Образец '+f.sn):'Форма';
+  showM('Удалить форму?','«'+nm+'» будет удалена безвозвратно.',[{t:'Отмена'},{t:'Удалить',c:'btn-danger',a:function(){S.forms=S.forms.filter(function(x){return x.id!==id});svF();renSaved();toast('Удалено','ok')}}]);
+}
+
+function expSPdf(id){
+  var f=null;for(var i=0;i<S.forms.length;i++){if(S.forms[i].id===id){f=S.forms[i];break}}if(!f)return;
+  var pa=document.getElementById('print-area');pa.innerHTML=bldPdf(f);pa.style.display='block';
+  html2pdf().set({margin:[8,8,8,8],filename:'cupping_'+(f.sn||'1')+'.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(pa.firstElementChild).save().then(function(){pa.style.display='none';toast('PDF сохранён','ok')}).catch(function(){pa.style.display='none';toast('Ошибка PDF','er')});
+}
+function expFormJson(){
+  syncDom();var f=S.cur;if(!f)return;
+  var b=new Blob([JSON.stringify(f,null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');
+  a.href=u;a.download='cupping_'+(f.sn||'1')+'.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);toast('JSON экспортирован','ok');
+}
+function expJson(id){
+  var f=null;for(var i=0;i<S.forms.length;i++){if(S.forms[i].id===id){f=S.forms[i];break}}if(!f)return;
+  var b=new Blob([JSON.stringify(f,null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');
+  a.href=u;a.download='cupping_'+(f.sn||'1')+'.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);toast('JSON экспортирован','ok');
+}
+
+function renSaved(){
+  var box=document.getElementById('slist');
+  if(!S.forms.length){box.innerHTML='<div class="es"><i class="fa-solid fa-folder-open"></i><p>Нет сохранённых форм</p></div>';return}
+  box.innerHTML=S.forms.map(function(f){
+    var c=gc(f.fs);
+    return'<div class="si"><div class="sis">'+f.fs.toFixed(1)+'</div><div class="sii"><h3>'+es(f.ds||'Образец '+(f.sn||'?'))+'</h3><p>'+es(f.nm||'Без имени')+' · '+fd(f.dt)+' · <span class="cb '+c.c+'" style="font-size:.7rem">'+c.l+'</span></p></div><div class="sia"><button class="btn btn-sm btn-icon" title="PDF" onclick="event.stopPropagation();expSPdf(\''+f.id+'\')"><i class="fa-solid fa-file-pdf"></i></button><button class="btn btn-sm btn-icon" title="JSON" onclick="event.stopPropagation();expJson(\''+f.id+'\')"><i class="fa-solid fa-download"></i></button><button class="btn btn-sm btn-icon btn-danger" title="Удалить" onclick="event.stopPropagation();delF(\''+f.id+'\')"><i class="fa-solid fa-trash"></i></button><button class="btn btn-sm btn-accent" onclick="openF(\''+f.id+'\')"><span class="hide-sm">Открыть</span><i class="fa-solid fa-arrow-right"></i></button></div></div>';
+  }).join('');
+}
+
+function bldPdf(f){
+  var c=gc(f.fs),sc=function(v){return v?v.toFixed(2):'--'},cs=function(a){return(a||[]).filter(Boolean).length*2};
+  var dt=0;(f.df||[]).forEach(function(d){dt+=(d.type==='fault'?4:2)*(parseInt(d.cups)||0)});
+  var rows=[
+    ['Аромат сухой','--',es(f.fdry)],
+    ['Аромат заваренный','--',es(f.fbrew)],
+    ['Аромат (качество)',sc(f.fas),''],
+    ['Букет',sc(f.fls),es(f.fln)],
+    ['Послевкусие',sc(f.ats),es(f.atn)],
+    ['Кислотность',sc(f.acs),es(f.acn)],
+    ['Тело',sc(f.bds),es(f.bdn)],
+    ['Баланс',sc(f.bls),es(f.bln)],
+    ['Однородность',cs(f.uc)+' / 10',''],
+    ['Чистая чашка',cs(f.cc)+' / 10',''],
+    ['Сладость',cs(f.swc)+' / 10',''],
+    ['Общая оценка',sc(f.ovs),es(f.ovn)]
+  ];
+
+  var trs=rows.map(function(r){
+    return '<tr>'+
+      '<td style="padding:4px 7px;border:1px solid #ddd;background:#faf6f0;word-wrap:break-word"><b>'+r[0]+'</b></td>'+
+      '<td style="padding:4px 7px;border:1px solid #ddd;text-align:center;font-weight:700;width:70px">'+r[1]+'</td>'+
+      '<td style="padding:4px 7px;border:1px solid #ddd;font-size:10px;word-wrap:break-word">'+(r[2]||'-')+'</td>'+
+    '</tr>';
+  }).join('');
+
+  var defRows='';
+  if(f.df&&f.df.length){
+    defRows='<table style="width:100%;table-layout:fixed;font-size:10px;border-collapse:collapse;margin-bottom:10px">'+
+      '<tr style="background:#c45040;color:#fff"><th style="padding:4px;border:1px solid #c45040">Тип</th><th style="padding:4px;border:1px solid #c45040;width:40px">Чаш.</th><th style="padding:4px;border:1px solid #c45040">Описание</th><th style="padding:4px;border:1px solid #c45040;width:50px">Вычет</th></tr>'+
+      f.df.map(function(d){
+        return '<tr>'+
+          '<td style="padding:3px 5px;border:1px solid #ddd">'+(d.type==='taint'?'Taint (-2)':'Fault (-4)')+'</td>'+
+          '<td style="padding:3px 5px;border:1px solid #ddd;text-align:center">'+(d.cups||0)+'</td>'+
+          '<td style="padding:3px 5px;border:1px solid #ddd;word-wrap:break-word">'+es(d.desc||'-')+'</td>'+
+          '<td style="padding:3px 5px;border:1px solid #ddd;text-align:center;color:#c45040;font-weight:700">-'+((d.type==='fault'?4:2)*(d.cups||0))+'</td>'+
+        '</tr>';
+      }).join('')+
+      '<tr style="font-weight:700"><td colspan="3" style="padding:4px;border:1px solid #ddd;text-align:right">Итого:</td><td style="padding:4px;border:1px solid #ddd;text-align:center;color:#c45040">-'+dt+'</td></tr>'+
+    '</table>';
+  }
+
+  return '<div style="font-family:Arial,sans-serif;color:#1a1612;padding:28px;max-width:700px;margin:auto">'+
+    '<div style="text-align:center;margin-bottom:18px;border-bottom:3px solid #b8892e;padding-bottom:12px">'+
+      '<h1 style="font-size:21px;margin:0">Specialty Coffee Association</h1>'+
+      '<p style="margin:4px 0 0;font-size:12px;color:#5a4d3e">Форма для дегустации арабики</p>'+
+    '</div>'+
+    '<table style="width:100%;table-layout:fixed;font-size:11px;border-collapse:collapse;margin-bottom:14px">'+
+      '<tr><td style="padding:4px 7px;border:1px solid #ccc;width:25%;background:#f5f0e8"><b>Имя:</b></td><td style="padding:4px 7px;border:1px solid #ccc;word-wrap:break-word">'+es(f.nm||'-')+'</td><td style="padding:4px 7px;border:1px solid #ccc;width:20%;background:#f5f0e8"><b>Дата:</b></td><td style="padding:4px 7px;border:1px solid #ccc">'+fd(f.dt)+'</td></tr>'+
+      '<tr><td style="padding:4px 7px;border:1px solid #ccc;background:#f5f0e8"><b>Стол №:</b></td><td style="padding:4px 7px;border:1px solid #ccc">'+es(f.tn||'-')+'</td><td style="padding:4px 7px;border:1px solid #ccc;background:#f5f0e8"><b>Образец №:</b></td><td style="padding:4px 7px;border:1px solid #ccc">'+es(f.sn||'-')+'</td></tr>'+
+      '<tr><td style="padding:4px 7px;border:1px solid #ccc;background:#f5f0e8"><b>Описание:</b></td><td colspan="3" style="padding:4px 7px;border:1px solid #ccc;word-wrap:break-word">'+es(f.ds||'-')+'</td></tr>'+
+      '<tr><td style="padding:4px 7px;border:1px solid #ccc;background:#f5f0e8"><b>Обжарка:</b></td><td colspan="3" style="padding:4px 7px;border:1px solid #ccc;word-wrap:break-word">'+es(f.rd||'-')+'</td></tr>'+
+      '<tr><td style="padding:4px 7px;border:1px solid #ccc;background:#f5f0e8"><b>Дата обжарки:</b></td><td colspan="3" style="padding:4px 7px;border:1px solid #ccc;word-wrap:break-word">'+es(f.roastDate||'-')+'</td></tr>'+
+      '<tr><td style="padding:4px 7px;border:1px solid #ccc;background:#f5f0e8"><b>Минерализация:</b></td><td colspan="3" style="padding:4px 7px;border:1px solid #ccc;word-wrap:break-word">'+es(f.waterTDS||'-')+'</td></tr>'+
+      '<tr><td style="padding:4px 7px;border:1px solid #ccc;background:#f5f0e8"><b>Температура заваривания:</b></td><td colspan="3" style="padding:4px 7px;border:1px solid #ccc;word-wrap:break-word">'+es(f.brewTemp||'-')+'</td></tr>'+
+    '</table>'+
+    '<table style="width:100%;table-layout:fixed;font-size:11px;border-collapse:collapse;margin-bottom:10px">'+
+      '<tr style="background:#b8892e;color:#fff"><th style="padding:5px;border:1px solid #b8892e">Параметр</th><th style="padding:5px;border:1px solid #b8892e;width:70px">Оценка</th><th style="padding:5px;border:1px solid #b8892e">Заметки</th></tr>'+
+      trs+
+    '</table>'+
+    defRows+
+    '<div style="text-align:center;border:2px solid #b8892e;border-radius:8px;padding:14px;margin-top:6px">'+
+      '<div style="font-size:11px;color:#5a4d3e">ИТОГОВАЯ ОЦЕНКА</div>'+
+      '<div style="font-size:34px;font-weight:700;color:#b8892e;font-family:serif">'+f.fs.toFixed(2)+'</div>'+
+      '<div style="margin-top:3px;font-size:12px;font-weight:600">'+c.l+'</div>'+
+    '</div>'+
+    '<div style="margin-top:14px;text-align:center;font-size:9px;color:#999">Cupping Pro · '+new Date().toLocaleString('ru-RU')+'</div>'+
+  '</div>';
+}
+
+function expPdf(){
+  syncDom();var f=S.cur,pa=document.getElementById('print-area');pa.innerHTML=bldPdf(f);pa.style.display='block';
+  html2pdf().set({margin:[8,8,8,8],filename:'cupping_'+(f.sn||'1')+'.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(pa.firstElementChild).save().then(function(){pa.style.display='none';toast('PDF сохранён','ok')}).catch(function(){pa.style.display='none';toast('Ошибка PDF','er')});
+}
+function sharePdf(){
+  syncDom();var f=S.cur,pa=document.getElementById('print-area');pa.innerHTML=bldPdf(f);pa.style.display='block';
+  html2pdf().set({margin:[8,8,8,8],image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(pa.firstElementChild).outputPdf('blob').then(function(blob){
+    pa.style.display='none';var file=new File([blob],'cupping_'+(f.sn||'1')+'.pdf',{type:'application/pdf'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({title:'Каппинг',text:(f.ds||'Образец')+' — '+f.fs.toFixed(2),files:[file]}).then(function(){toast('Отправлено','ok')}).catch(function(){})}
+    else{var u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='cupping_'+(f.sn||'1')+'.pdf';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);toast('PDF скачан','wa')}
+  }).catch(function(e){pa.style.display='none';toast('Ошибка','er')});
+}
+
+function trigImp(){document.getElementById('ifile').click()}
+document.getElementById('ifile').addEventListener('change',function(){
+  var file=this.files[0];if(!file)return;this.value='';
+  var reader=new FileReader();reader.onload=function(e){
+    try{var data=JSON.parse(e.target.result);if(!data||typeof data!=='object')throw 0;
+      if('fragranceBreak' in data&&!('fbrew' in data)){data.fbrew=data.fragranceBreak;delete data.fragranceBreak}
+      var t=ef();Object.keys(t).forEach(function(k){if(!(k in data))data[k]=t[k]});
+      if(!Array.isArray(data.uc))data.uc=[1,1,1,1,1];if(!Array.isArray(data.cc))data.cc=[1,1,1,1,1];if(!Array.isArray(data.swc))data.swc=[1,1,1,1,1];if(!Array.isArray(data.df))data.df=[];
+      calc(data);
+      if(S.forms.length>=MX){showM('Лимит','Открыть без сохранения?',[{t:'Отмена'},{t:'Открыть',c:'btn-accent',a:function(){S.cur=data;S.eid=null;S.snp=sp(data);goPage('form')}}])}
+      else{showM('Импорт','Загрузить «'+(data.ds||'Образец '+(data.sn||'?'))+'»?',[{t:'Только открыть',a:function(){S.cur=data;S.eid=null;S.snp=sp(data);goPage('form')}},{t:'Сохранить',c:'btn-accent',a:function(){data.id=uid();S.forms.push(data);svF();S.cur=data;S.eid=data.id;S.snp=sp(data);goPage('form');toast('Импортировано','ok')}}])}
+    }catch(er){toast('Некорректный файл','er')}};reader.readAsText(file);
+});
+
+window.addEventListener('scroll',function(){document.getElementById('stb').classList.toggle('vis',window.scrollY>400)},{passive:true});
+
+function init(){apTh();ldF();goPage('home')}
+init();
+</script>
+</body>
+</html>
