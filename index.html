@@ -72,8 +72,9 @@ ul.stepsBrewing {list-style-type: none; padding-left: 0;}
 .fm{display:grid;grid-template-columns:repeat(3,minmax(0, 1fr));gap:10px;margin-bottom:18px}
 .fg{display:flex;flex-direction:column;gap:3px}
 .fg label{font-size:.72rem;font-weight:600;color:var(--fg3);text-transform:uppercase;letter-spacing:.5px}
-.fg input,.fg textarea{background:var(--bg2);border:1px solid var(--brd);border-radius:9px;padding:9px 12px;color:var(--fg);font-family:'Nunito Sans',sans-serif;font-size:.88rem;transition:border-color .2s;outline:none;width:100%}
+.fg input,.fg textarea{background:var(--bg2);border:1px solid var(--brd);border-radius:9px;padding:9px 12px;color:var(--fg);font-family:'Nunito Sans',sans-serif;font-size:.88rem;transition:border-color .2s;outline:none;width:100%;min-width: 0;box-sizing: border-box;}
 .fg input:focus,.fg textarea:focus{border-color:var(--acc)}
+.fg input[type="date"] {-webkit-appearance: none;appearance: none;min-height: 0;}
 .fg textarea{resize:vertical;min-height:56px}
 .sc{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:16px;margin-bottom:12px;transition:border-color .2s}
 .sc:hover{border-color:color-mix(in srgb,var(--brd) 50%,var(--acc))}
