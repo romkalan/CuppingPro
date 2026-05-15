@@ -21,6 +21,9 @@ a{color:var(--acc);text-decoration:none}
 .blob-3{width:300px;height:300px;background:#c47a3a;top:40%;right:20%;animation:bf 20s ease-in-out infinite 5s}
 @keyframes bf{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-40px) scale(1.05)}66%{transform:translate(-20px,30px) scale(.95)}}
 @media(prefers-reduced-motion:reduce){.blob{animation:none!important}}
+.skip-link{position:absolute;top:-100px;left:16px;background:var(--acc);color:#1a1612;padding:10px 20px;border-radius:8px;font-size:.85rem;font-weight:600;z-index:10000;text-decoration:none;transition:top .2s}
+.skip-link:focus{top:12px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
 header{position:sticky;top:0;z-index:100;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--brd);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;transition:background .4s}
 .logo{display:flex;align-items:center;gap:8px;font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:700;color:var(--fg);cursor:pointer}
 .logo i{color:var(--acc);font-size:1.15rem}
@@ -141,7 +144,7 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;b
 .mb p{font-size:.88rem;color:var(--fg2);line-height:1.6;margin-bottom:18px;word-wrap:break-word;overflow-wrap:break-word}
 .mbb{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
-#print-area{display:none}
+#print-area{position:fixed;left:-9999px;top:0;width:700px;z-index:-1;pointer-events:none}
 .stb{position:fixed;bottom:20px;right:20px;width:42px;height:42px;border-radius:11px;background:var(--card);border:1px solid var(--brd);color:var(--acc);font-size:1rem;cursor:pointer;z-index:50;display:none;align-items:center;justify-content:center;transition:all .2s;box-shadow:var(--shadow)}
 .stb:hover{background:var(--acc);color:#1a1612}
 .stb.vis{display:flex}
@@ -164,35 +167,39 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;b
 <body>
 <div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div>
 <header>
-  <div class="logo" onclick="goPage('home')"><i class="fa-solid fa-mug-hot"></i><span>Cupping Pro</span></div>
+  <div class="logo" onclick="goPage('home')"><i class="fa-solid fa-mug-hot" aria-hidden="true"></i><span>Cupping Pro</span></div>
   <div class="hdr-actions">
     <div id="hfa" style="display:none;gap:5px" class="hdr-actions">
-      <button class="btn btn-sm" onclick="doSave()"><i class="fa-solid fa-floppy-disk"></i><span class="hide-sm">Сохранить</span></button>
-      <button class="btn btn-sm" onclick="expFormJson()"><i class="fa-solid fa-download"></i><span class="hide-sm">JSON</span></button>
-      <button class="btn btn-sm" onclick="expPdf()"><i class="fa-solid fa-file-pdf"></i><span class="hide-sm">PDF</span></button>
-      <button class="btn btn-sm btn-accent smb" onclick="sharePdf()"><i class="fa-solid fa-share-nodes"></i><span class="hide-sm">Поделиться</span></button>
+      <button class="btn btn-sm" onclick="doSave()"><i class="fa-solid fa-floppy-disk" aria-hidden="true"></i><span class="hide-sm">Сохранить</span></button>
+      <button class="btn btn-sm" onclick="expFormJson()"><i class="fa-solid fa-download" aria-hidden="true"></i><span class="hide-sm">JSON</span></button>
+      <button class="btn btn-sm" id="pdfBtn" onclick="expPdf()"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i><span class="hide-sm">PDF</span></button>
+      <button class="btn btn-sm btn-accent smb" onclick="sharePdf()"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i><span class="hide-sm">Поделиться</span></button>
     </div>
-    <button class="theme-btn" onclick="togTheme()" aria-label="Тема"><i class="fa-solid fa-moon"></i></button>
+    <button class="theme-btn" onclick="togTheme()" aria-label="Тема"><i class="fa-solid fa-moon" aria-hidden="true"></i></button>
   </div>
 </header>
 
 <section id="page-home" class="page active">
   <div class="hero"><h1>Каппинг кофе</h1><p>Профессиональная дегустация по протоколу<br>Specialty Coffee Association</p></div>
   <div class="actions-grid">
-    <div class="action-card" onclick="newForm()"><i class="fa-solid fa-plus"></i><h3>Новая форма</h3><span>Создать бланк каппинга</span></div>
-    <div class="action-card" onclick="goPage('saved')"><i class="fa-solid fa-folder-open"></i><h3>Сохранённые</h3><span>Открыть ранее сохранённые формы</span></div>
+    <div class="action-card" onclick="newForm()"><i class="fa-solid fa-plus" aria-hidden="true"></i><h3>Новая форма</h3><span id="formCount">Создать бланк каппинга</span></div>
+    <div class="action-card" onclick="goPage('saved')"><i class="fa-solid fa-folder-open" aria-hidden="true"></i><h3>Сохранённые</h3><span>Открыть ранее сохранённые формы</span></div>
     <div class="action-card import-card" onclick="trigImp()">
-  	<i class="fa-solid fa-file-import"></i>
+  	<i class="fa-solid fa-file-import" aria-hidden="true"></i>
   	<h3>Импорт</h3>
   	<span>Загрузить форму из файла</span>
-  	<i class="fa-solid fa-circle-question import-tip" onclick="event.stopPropagation();toast('Импорт возможен только из JSON-файлов. Пример JSON-файлов можно посмотреть, нажав кнопку экспорта любой сохранённой формы','info')"></i>
+  	<i class="fa-solid fa-circle-question import-tip" aria-hidden="true" onclick="event.stopPropagation();toast('Импорт возможен только из JSON-файлов. Пример JSON-файлов можно посмотреть, нажав кнопку экспорта любой сохранённой формы','info')"></i>
     </div>
   </div>
 
   <div class="ps">
-    <h2>Протокол проведения каппинга</h2>
+    <details>
+    <summary style="cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--acc);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--brd)">Протокол проведения каппинга</summary>
+    <div style="margin-top:12px">
     <p>Каппинг — профессиональная дегустация кофе с целью раскрыть его ароматические и вкусовые характеристики. Важно при проведении каппинга соблюдать равные условия для каждого образца кофе.</p>
     <p>Цель протокола проведения каппинга — определение качества продукта, в результате чего анализируют и описывают аромат, вкус, послевкусие, кислотность, тело и баланс, сладость, однородность и чистоту, а также наличие или отсутствие дефектов в каждой чашке по числовой шкале (от 0 до 100 баллов). Баллы суммируются и выставляется общая оценка для каждого образца.</p>
+    </div>
+    </details>
   </div>
 
   <div class="ps">
@@ -238,7 +245,9 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;b
   </div>
 
   <div class="ps">
-    <h2>Последовательность действий</h2>
+    <details>
+    <summary style="cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--acc);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--brd)">Последовательность действий</summary>
+    <div style="margin-top:12px">
     <ul class="stepsBrewing">
       <li><span class="sn">1</span><strong>Подготовка рабочего места</strong> — расстановка оборудования и инвентаря, помол кофе, нагрев воды до необходимой температуры.</li>
       <li><span class="sn">2</span><strong>Аромат сухого и заваренного кофе. Fragrance</strong> — оценка аромата молотого сухого кофе (оценивается в первые 15 минут после помола, желательно). Оценивается обычно только интенсивность, баллы за оценку сухого аромата не выставляются. После того как кофе смолот и находится в чашке для оценки, к чашкам больше не рекомендуется прикасаться и перемещать их.</li>
@@ -266,7 +275,7 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;b
           <li><strong>Clean Cup (Чистая чашка)</strong> — совокупность физических и вкусовых свойств кофе, свободного от примесей, посторонних привкусов, грязи, дефектов от первого глотка до послевкусия. 2 балла за каждую чашку из 5 (максимум 10 баллов).</li>
         </ul>
       </li>
-      <li><span class="sn">10</span><strong>Общая оценка (Overall)</strong> — индивидуальная оценка образца в восприятии каждого отдельного участника дегустации. Учитывается общее впечатление, учитывающее все аспекты咖啡.</li>
+      <li><span class="sn">10</span><strong>Общая оценка (Overall)</strong> — индивидуальная оценка образца в восприятии каждого отдельного участника дегустации. Учитывается общее впечатление, учитывающее все аспекты кофе.</li>
       <li><span class="sn">11</span><strong>Распознание и запись дефектов</strong> — дефекты — отрицательные вкусы (ароматы), которые снижают качество кофе. Существует 2 типа дефектов:
         <ul>
           <li><strong>Taint</strong> — неприятный, испорченный, но не доминирующий вкус (аромат). Оценивается в 2 балла.</li>
@@ -275,7 +284,9 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;b
         Сначала дефект классифицируют, затем определяют характер. Далее отмечается количество чашек, в которых обнаружен дефект, и умножается на 2 или 4 в зависимости от интенсивности найденного дефекта. Оценка за дефекты вычитается из общей суммы баллов.
       </li>
       <li><span class="sn">12</span><strong>Подсчёт баллов</strong> — после того как выставлены все баллы при оценке образцов кофе и вычтены баллы за дефекты, происходит подсчёт баллов. Окончательная оценка показывает качество кофе.</li>
-    </ol>
+    </ul>
+    </div>
+    </details>
   </div>
 
   <div class="ps">
@@ -296,16 +307,16 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;b
 
 <section id="page-saved" class="page">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap">
-    <button class="btn btn-sm" onclick="goPage('home')"><i class="fa-solid fa-arrow-left"></i> <span class="hide-sm">Назад</span></button>
+    <button class="btn btn-sm" onclick="goPage('home')"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> <span class="hide-sm">Назад</span></button>
     <h2 style="font-size:1.35rem;flex:1">Сохранённые формы</h2>
   </div>
   <div id="slist"></div>
 </section>
 
-<div id="tb"></div>
-<div class="mo" id="modal"><div class="mb"><h3 id="mt"></h3><p id="mm"></p><div class="mbb" id="mbs"></div></div></div>
+<div id="tb" role="alert" aria-live="polite"></div>
+<div class="mo" id="modal" role="dialog" aria-modal="true"><div class="mb"><h3 id="mt"></h3><p id="mm"></p><div class="mbb" id="mbs"></div></div></div>
 <input type="file" id="ifile" accept=".json" hidden>
-<button class="stb" id="stb" onclick="window.scrollTo({top:0})" aria-label="Наверх"><i class="fa-solid fa-chevron-up"></i></button>
+<span class="stb" id="stb" onclick="window.scrollTo({top:0})" role="button" tabindex="0" aria-label="Наверх"><i class="fa-solid fa-chevron-up" aria-hidden="true"></i></span>
 <div id="print-area"></div>
 
 <footer style="text-align:center; padding: 24px 16px 16px; color: var(--fg3); font-family: 'Nunito Sans', sans-serif; font-size: 0.78rem; border-top: 1px solid var(--brd); margin-top: 32px;">
@@ -329,7 +340,7 @@ function es(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(
 function cbl(s){var c=gc(s);return'<span class="cb '+c.c+'">'+c.l+'</span>'}
 
 function togTheme(){S.th=S.th==='dark'?'light':'dark';localStorage.setItem('cp_th',S.th);apTh()}
-function apTh(){document.documentElement.setAttribute('data-theme',S.th);document.querySelector('.theme-btn i').className=S.th==='dark'?'fa-solid fa-moon':'fa-solid fa-sun'}
+function apTh(){document.documentElement.setAttribute('data-theme',S.th);var el=document.querySelector('.theme-btn i');el.className=S.th==='dark'?'fa-solid fa-moon':'fa-solid fa-sun';el.setAttribute('aria-hidden','true')}
 
 function goPage(p){
   S.pg=p;
@@ -339,13 +350,14 @@ function goPage(p){
   document.getElementById('hfa').style.display=p==='form'?'flex':'none';
   if(p==='saved')renSaved();
   if(p==='form')renForm();
+  updFormCount();
 }
 
 function toast(m,t){
   var b=document.getElementById('tb'),e=document.createElement('div');
   e.className='to'+(t==='ok'?' to-ok':t==='er'?' to-er':t==='wa'?' to-wa':'');
   var ic={ok:'fa-circle-check',er:'fa-circle-xmark',wa:'fa-triangle-exclamation',info:'fa-circle-info'};
-  e.innerHTML='<i class="fa-solid '+(ic[t]||ic.info)+'"></i><span>'+m+'</span>';
+  e.innerHTML='<i class="fa-solid '+(ic[t]||ic.info)+'" aria-hidden="true"></i><span>'+m+'</span>';
   b.appendChild(e);setTimeout(function(){e.classList.add('out');setTimeout(function(){e.remove()},300)},3200);
 }
 
@@ -384,28 +396,28 @@ function sgH(fld,val){
   return h+'</div></div></div>';
 }
 function cpH(fld,vals){
-  var h='<div class="cr">';for(var i=0;i<5;i++)h+='<button type="button" class="cub'+(vals[i]?' on':'')+'" data-cf="'+fld+'" data-ci="'+i+'"><i class="fa-solid fa-mug-hot"></i></button>';
+  var h='<div class="cr">';for(var i=0;i<5;i++)h+='<button type="button" class="cub'+(vals[i]?' on':'')+'" data-cf="'+fld+'" data-ci="'+i+'"><i class="fa-solid fa-mug-hot" aria-hidden="true"></i></button>';
   return h+'<span class="cst" data-cs="'+fld+'">'+vals.filter(Boolean).length*2+' / 10</span></div>';
 }
 function drH(d,i){
-  return'<div class="dr"><select class="dt" data-di="'+i+'"><option value="taint"'+(d.type==='taint'?' selected':'')+'>Лёгкий (Taint) -2</option><option value="fault"'+(d.type==='fault'?' selected':'')+'>Сильный (Fault) -4</option></select><input type="number" class="dc" data-di="'+i+'" min="0" max="5" value="'+(d.cups||0)+'" placeholder="Чашек"><input type="text" class="dd" data-di="'+i+'" value="'+es(d.desc||'')+'" placeholder="Описание"><span class="dv" data-di="'+i+'">-'+((d.type==='fault'?4:2)*(parseInt(d.cups)||0))+'</span><button class="btn btn-sm btn-danger btn-icon" onclick="rmDef('+i+')"><i class="fa-solid fa-xmark"></i></button></div>';
+  return'<div class="dr"><select class="dt" data-di="'+i+'"><option value="taint"'+(d.type==='taint'?' selected':'')+'>Лёгкий (Taint) -2</option><option value="fault"'+(d.type==='fault'?' selected':'')+'>Сильный (Fault) -4</option></select><input type="number" class="dc" data-di="'+i+'" min="0" max="5" value="'+(d.cups||0)+'" placeholder="Чашек"><input type="text" class="dd" data-di="'+i+'" value="'+es(d.desc||'')+'" placeholder="Описание"><span class="dv" data-di="'+i+'">-'+((d.type==='fault'?4:2)*(parseInt(d.cups)||0))+'</span><button class="btn btn-sm btn-danger btn-icon" onclick="rmDef('+i+')" aria-label="Удалить дефект"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div>';
 }
-function dtH(f){var t=0;(f.df||[]).forEach(function(d){t+=(d.type==='fault'?4:2)*(parseInt(d.cups)||0)});return'<div class="dtt"><i class="fa-solid fa-circle-minus"></i> Вычет: -'+t+' баллов</div>'}
+  function dtH(f){var t=0;(f.df||[]).forEach(function(d){t+=(d.type==='fault'?4:2)*(parseInt(d.cups)||0)});return'<div class="dtt"><i class="fa-solid fa-circle-minus" aria-hidden="true"></i> Вычет: -'+t+' баллов</div>'}
 
 function renForm(){
   var f=S.cur;if(!f)return;
   document.getElementById('fcon').innerHTML=
-  '<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap"><button class="btn btn-sm" onclick="cfLeave()"><i class="fa-solid fa-arrow-left"></i> <span class="hide-sm">Назад</span></button><h2 style="font-size:1.2rem;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Каппинг'+(f.ds?' — '+f.ds:'')+'</h2></div>'+
-  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-user"></i> Информация</div><div class="fm"><div class="fg"><label>Имя</label><input type="text" id="fnm" value="'+es(f.nm)+'" placeholder="Ваше имя"></div><div class="fg"><label>Дата</label><input type="date" id="fdt" value="'+f.dt+'"></div><div class="fg"><label>Стол №</label><input type="text" id="ftn" value="'+es(f.tn)+'" placeholder="Номер стола"></div><div class="fg"><label>Образец №</label><input type="text" id="fsn" value="'+es(f.sn)+'" placeholder="Номер образца"></div><div class="fg"><label>Описание образца</label><input type="text" id="fds" value="'+es(f.ds)+'" placeholder="Страна, регион, ферма"></div><div class="fg"><label>Степень обжарки</label><input type="text" id="frd" value="'+es(f.rd)+'" placeholder="Например: средняя, светлая"></div><div class="fg"><label>Дата обжарки</label><input type="date" id="froast" value="'+es(f.roastDate || td())+'"></div><div class="fg"><label>Минерализация воды</label><input type="text" id="fwater" value="'+es(f.waterTDS)+'" placeholder="TDS, ppm"></div><div class="fg"><label>Температура заваривания</label><input type="text" id="fbrewtemp" value="'+es(f.brewTemp)+'" placeholder="°C"></div></div></div>'+
-  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-wind"></i> Аромат сухой / заваренный</div><div class="tc" style="margin-bottom:10px"><div class="fg"><label>Сухой</label><textarea id="ffdry" placeholder="Заметки о сухом аромате">'+es(f.fdry)+'</textarea></div><div class="fg"><label>Заваренный</label><textarea id="ffbrew" placeholder="Заметки о заваренном">'+es(f.fbrew)+'</textarea></div></div>'+sgH('fas',f.fas)+'</div>'+
-  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-glass-water"></i> Букет (Flavor)</div>'+sgH('fls',f.fls)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="ffln" placeholder="Описание букета">'+es(f.fln)+'</textarea></div></div></div>'+
-  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-hourglass-half"></i> Послевкусие (Aftertaste)</div>'+sgH('ats',f.ats)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="fatn" placeholder="Описание послевкусия">'+es(f.atn)+'</textarea></div></div></div>'+
-  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-lemon"></i> Кислотность (Acidity)</div><div class="sc-s">Горизонтальная — интенсивность, в баллах — качество</div><div class="sw"><span class="swl">Низкая</span><input type="range" min="0" max="100" value="'+f.aci+'" id="faci"><span class="swl r">Высокая</span></div>'+sgH('acs',f.acs)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="facn" placeholder="Описание кислотности">'+es(f.acn)+'</textarea></div></div></div>'+
-  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-droplet"></i> Тело (Body)</div><div class="sc-s">Горизонтальная — плотность, в баллах — качество</div><div class="sw"><span class="swl">Лёгкое</span><input type="range" min="0" max="100" value="'+f.bdy+'" id="fbdi"><span class="swl r">Тяжёлое</span></div>'+sgH('bds',f.bds)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="fbdn" placeholder="Описание тела">'+es(f.bdn)+'</textarea></div></div></div>'+
-  '<div class="tc"><div class="sc"><div class="sc-t"><i class="fa-solid fa-equals"></i> Однородность</div><div class="sc-s">2 балла за чашку из 5</div>'+cpH('uc',f.uc)+'</div><div class="sc"><div class="sc-t"><i class="fa-solid fa-scale-balanced"></i> Баланс</div>'+sgH('bls',f.bls)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="fbln" placeholder="Описание баланса">'+es(f.bln)+'</textarea></div></div></div><div class="sc"><div class="sc-t"><i class="fa-solid fa-soap"></i> Чистая чашка</div><div class="sc-s">2 балла за чашку из 5</div>'+cpH('cc',f.cc)+'</div><div class="sc"><div class="sc-t"><i class="fa-solid fa-candy-cane"></i> Сладость</div><div class="sc-s">2 балла за чашку из 5</div>'+cpH('swc',f.swc)+'</div></div>'+
-  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-star"></i> Общая оценка (Overall)</div>'+sgH('ovs',f.ovs)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="fovn" placeholder="Общее впечатление">'+es(f.ovn)+'</textarea></div></div></div>'+
-  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-bug"></i> Дефекты</div><div class="sc-s">Taint (-2 за чашку), Fault (-4 за чашку)</div><div id="dfl">'+(f.df||[]).map(function(d,i){return drH(d,i)}).join('')+'</div><button class="btn btn-sm" onclick="adDef()" style="margin-top:6px"><i class="fa-solid fa-plus"></i> Добавить дефект</button><div id="dtw">'+(f.df&&f.df.length?dtH(f):'')+'</div></div>'+
-  '<div class="fc"><div class="fsl">Итоговая оценка</div><div class="fsn" id="fsc">'+f.fs.toFixed(2)+'</div><div class="fcl" id="fcl">'+cbl(f.fs)+'</div></div><div style="height:50px"></div>';
+  '<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap"><button class="btn btn-sm" onclick="cfLeave()"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> <span class="hide-sm">Назад</span></button><h2 style="font-size:1.2rem;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Каппинг'+(f.ds?' — '+f.ds:'')+'</h2></div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-user" aria-hidden="true"></i> Информация</div><div class="fm"><div class="fg"><label>Имя</label><input type="text" id="fnm" value="'+es(f.nm)+'" placeholder="Ваше имя"></div><div class="fg"><label>Дата</label><input type="date" id="fdt" value="'+f.dt+'"></div><div class="fg"><label>Стол №</label><input type="text" id="ftn" value="'+es(f.tn)+'" placeholder="Номер стола"></div><div class="fg"><label>Образец №</label><input type="text" id="fsn" value="'+es(f.sn)+'" placeholder="Номер образца"></div><div class="fg"><label>Описание образца</label><input type="text" id="fds" value="'+es(f.ds)+'" placeholder="Страна, регион, ферма"></div><div class="fg"><label>Степень обжарки</label><input type="text" id="frd" value="'+es(f.rd)+'" placeholder="Например: средняя, светлая"></div><div class="fg"><label>Дата обжарки</label><input type="date" id="froast" value="'+es(f.roastDate || td())+'"></div><div class="fg"><label>Минерализация воды</label><input type="text" id="fwater" value="'+es(f.waterTDS)+'" placeholder="TDS, ppm"></div><div class="fg"><label>Температура заваривания</label><input type="text" id="fbrewtemp" value="'+es(f.brewTemp)+'" placeholder="°C"></div></div></div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-wind" aria-hidden="true"></i> Аромат сухой / заваренный</div><div class="tc" style="margin-bottom:10px"><div class="fg"><label>Сухой</label><textarea id="ffdry" placeholder="Заметки о сухом аромате">'+es(f.fdry)+'</textarea></div><div class="fg"><label>Заваренный</label><textarea id="ffbrew" placeholder="Заметки о заваренном">'+es(f.fbrew)+'</textarea></div></div>'+sgH('fas',f.fas)+'</div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-glass-water" aria-hidden="true"></i> Букет (Flavor)</div>'+sgH('fls',f.fls)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="ffln" placeholder="Описание букета">'+es(f.fln)+'</textarea></div></div></div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-hourglass-half" aria-hidden="true"></i> Послевкусие (Aftertaste)</div>'+sgH('ats',f.ats)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="fatn" placeholder="Описание послевкусия">'+es(f.atn)+'</textarea></div></div></div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-lemon" aria-hidden="true"></i> Кислотность (Acidity)</div><div class="sc-s">Горизонтальная — интенсивность, в баллах — качество</div><div class="sw"><span class="swl">Низкая</span><input type="range" min="0" max="100" value="'+f.aci+'" id="faci"><span class="swl r">Высокая</span></div>'+sgH('acs',f.acs)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="facn" placeholder="Описание кислотности">'+es(f.acn)+'</textarea></div></div></div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-droplet" aria-hidden="true"></i> Тело (Body)</div><div class="sc-s">Горизонтальная — плотность, в баллах — качество</div><div class="sw"><span class="swl">Лёгкое</span><input type="range" min="0" max="100" value="'+f.bdy+'" id="fbdi"><span class="swl r">Тяжёлое</span></div>'+sgH('bds',f.bds)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="fbdn" placeholder="Описание тела">'+es(f.bdn)+'</textarea></div></div></div>'+
+  '<div class="tc"><div class="sc"><div class="sc-t"><i class="fa-solid fa-equals" aria-hidden="true"></i> Однородность</div><div class="sc-s">2 балла за чашку из 5</div>'+cpH('uc',f.uc)+'</div><div class="sc"><div class="sc-t"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> Баланс</div>'+sgH('bls',f.bls)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="fbln" placeholder="Описание баланса">'+es(f.bln)+'</textarea></div></div></div><div class="sc"><div class="sc-t"><i class="fa-solid fa-soap" aria-hidden="true"></i> Чистая чашка</div><div class="sc-s">2 балла за чашку из 5</div>'+cpH('cc',f.cc)+'</div><div class="sc"><div class="sc-t"><i class="fa-solid fa-candy-cane" aria-hidden="true"></i> Сладость</div><div class="sc-s">2 балла за чашку из 5</div>'+cpH('swc',f.swc)+'</div></div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-star" aria-hidden="true"></i> Общая оценка (Overall)</div>'+sgH('ovs',f.ovs)+'<div class="nf"><div class="fg"><label>Заметки</label><textarea id="fovn" placeholder="Общее впечатление">'+es(f.ovn)+'</textarea></div></div></div>'+
+  '<div class="sc"><div class="sc-t"><i class="fa-solid fa-bug" aria-hidden="true"></i> Дефекты</div><div class="sc-s">Taint (-2 за чашку), Fault (-4 за чашку)</div><div id="dfl">'+(f.df||[]).map(function(d,i){return drH(d,i)}).join('')+'</div><button class="btn btn-sm" onclick="adDef()" style="margin-top:6px"><i class="fa-solid fa-plus" aria-hidden="true"></i> Добавить дефект</button><div id="dtw">'+(f.df&&f.df.length?dtH(f):'')+'</div></div>'+
+  '<div class="fc"><div class="fsl">Итоговая оценка</div><div class="fsn" id="fsc" aria-live="polite">'+f.fs.toFixed(2)+'</div><div class="fcl" id="fcl">'+cbl(f.fs)+'</div></div><div style="height:50px"></div>';
   atchL();
 }
 
@@ -461,7 +473,7 @@ function doSave(){
   var copy=JSON.parse(JSON.stringify(f));
   if(S.eid){var idx=-1;for(var i=0;i<S.forms.length;i++){if(S.forms[i].id===S.eid){idx=i;break}}if(idx>=0)S.forms[idx]=copy;else{copy.id=uid();S.forms.push(copy)}}
   else{copy.id=uid();S.forms.push(copy);S.eid=copy.id}
-  svF();S.snp=sp(f);toast('Форма сохранена','ok');return true;
+  svF();S.snp=sp(f);toast('Форма сохранена','ok');updFormCount();return true;
 }
 
 function cfLeave(){
@@ -477,6 +489,10 @@ function newForm(){
   if(S.forms.length>=MX){showM('Лимит форм','Достигнут лимит ('+MX+').',[{t:'Закрыть'},{t:'К сохранённым',c:'btn-accent',a:function(){goPage('saved')}}]);return}
   S.cur=ef();S.eid=null;S.snp=sp(S.cur);goPage('form');
 }
+function updFormCount(){
+  var el=document.getElementById('formCount');
+  if(el)el.textContent='Создать бланк каппинга'+(S.forms.length>=MX?' (лимит)':' ('+(MX-S.forms.length)+' мест)');
+}
 function openF(id){
   var f=null;for(var i=0;i<S.forms.length;i++){if(S.forms[i].id===id){f=S.forms[i];break}}
   if(!f){toast('Форма не найдена','er');return}
@@ -485,13 +501,13 @@ function openF(id){
 function delF(id){
   var f=null;for(var i=0;i<S.forms.length;i++){if(S.forms[i].id===id){f=S.forms[i];break}}
   var nm=f?(f.ds||'Образец '+f.sn):'Форма';
-  showM('Удалить форму?','«'+nm+'» будет удалена безвозвратно.',[{t:'Отмена'},{t:'Удалить',c:'btn-danger',a:function(){S.forms=S.forms.filter(function(x){return x.id!==id});svF();renSaved();toast('Удалено','ok')}}]);
+  showM('Удалить форму?','«'+nm+'» будет удалена безвозвратно.',[{t:'Отмена'},{t:'Удалить',c:'btn-danger',a:function(){S.forms=S.forms.filter(function(x){return x.id!==id});svF();renSaved();updFormCount();toast('Удалено','ok')}}]);
 }
 
 function expSPdf(id){
   var f=null;for(var i=0;i<S.forms.length;i++){if(S.forms[i].id===id){f=S.forms[i];break}}if(!f)return;
-  var pa=document.getElementById('print-area');pa.innerHTML=bldPdf(f);pa.style.display='block';
-  html2pdf().set({margin:[8,8,8,8],filename:'cupping_'+(f.sn||'1')+'.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(pa.firstElementChild).save().then(function(){pa.style.display='none';toast('PDF сохранён','ok')}).catch(function(){pa.style.display='none';toast('Ошибка PDF','er')});
+  var pa=document.getElementById('print-area');pa.innerHTML=bldPdf(f);
+  html2pdf().set({margin:[8,8,8,8],filename:'cupping_'+(f.sn||'1')+'.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(pa.firstElementChild).save().then(function(){pa.innerHTML='';toast('PDF сохранён','ok')}).catch(function(){pa.innerHTML='';toast('Ошибка PDF','er')});
 }
 function expFormJson(){
   syncDom();var f=S.cur;if(!f)return;
@@ -506,10 +522,11 @@ function expJson(id){
 
 function renSaved(){
   var box=document.getElementById('slist');
-  if(!S.forms.length){box.innerHTML='<div class="es"><i class="fa-solid fa-folder-open"></i><p>Нет сохранённых форм</p></div>';return}
-  box.innerHTML=S.forms.map(function(f){
+  if(!S.forms.length){box.innerHTML='<div class="es"><i class="fa-solid fa-folder-open" aria-hidden="true"></i><p>Нет сохранённых форм</p></div>';return}
+  var sorted=S.forms.slice().sort(function(a,b){return(b.dt||'').localeCompare(a.dt||'')||(b.id||'').localeCompare(a.id||'')});
+  box.innerHTML=sorted.map(function(f){
     var c=gc(f.fs);
-    return'<div class="si"><div class="sis">'+f.fs.toFixed(1)+'</div><div class="sii"><h3>'+es(f.ds||'Образец '+(f.sn||'?'))+'</h3><p>'+es(f.nm||'Без имени')+' · '+fd(f.dt)+' · <span class="cb '+c.c+'" style="font-size:.7rem">'+c.l+'</span></p></div><div class="sia"><button class="btn btn-sm btn-icon" title="PDF" onclick="event.stopPropagation();expSPdf(\''+f.id+'\')"><i class="fa-solid fa-file-pdf"></i></button><button class="btn btn-sm btn-icon" title="JSON" onclick="event.stopPropagation();expJson(\''+f.id+'\')"><i class="fa-solid fa-download"></i></button><button class="btn btn-sm btn-icon btn-danger" title="Удалить" onclick="event.stopPropagation();delF(\''+f.id+'\')"><i class="fa-solid fa-trash"></i></button><button class="btn btn-sm btn-accent" onclick="openF(\''+f.id+'\')"><span class="hide-sm">Открыть</span><i class="fa-solid fa-arrow-right"></i></button></div></div>';
+    return'<div class="si"><div class="sis">'+f.fs.toFixed(1)+'</div><div class="sii"><h3>'+es(f.ds||'Образец '+(f.sn||'?'))+'</h3><p>'+es(f.nm||'Без имени')+' · '+fd(f.dt)+' · <span class="cb '+c.c+'" style="font-size:.7rem">'+c.l+'</span></p></div><div class="sia"><button class="btn btn-sm btn-icon" aria-label="PDF" onclick="event.stopPropagation();expSPdf(\''+f.id+'\')"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i></button><button class="btn btn-sm btn-icon" aria-label="JSON" onclick="event.stopPropagation();expJson(\''+f.id+'\')"><i class="fa-solid fa-download" aria-hidden="true"></i></button><button class="btn btn-sm btn-icon btn-danger" aria-label="Удалить" onclick="event.stopPropagation();delF(\''+f.id+'\')"><i class="fa-solid fa-trash" aria-hidden="true"></i></button><button class="btn btn-sm btn-accent" onclick="openF(\''+f.id+'\')"><span class="hide-sm">Открыть</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button></div></div>';
   }).join('');
 }
 
@@ -584,16 +601,18 @@ function bldPdf(f){
 }
 
 function expPdf(){
-  syncDom();var f=S.cur,pa=document.getElementById('print-area');pa.innerHTML=bldPdf(f);pa.style.display='block';
-  html2pdf().set({margin:[8,8,8,8],filename:'cupping_'+(f.sn||'1')+'.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(pa.firstElementChild).save().then(function(){pa.style.display='none';toast('PDF сохранён','ok')}).catch(function(){pa.style.display='none';toast('Ошибка PDF','er')});
+  syncDom();var f=S.cur,pa=document.getElementById('print-area'),btn=document.getElementById('pdfBtn');
+  btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i><span class="hide-sm">PDF…</span>';
+  pa.innerHTML=bldPdf(f);
+  html2pdf().set({margin:[8,8,8,8],filename:'cupping_'+(f.sn||'1')+'.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(pa.firstElementChild).save().then(function(){pa.innerHTML='';btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-file-pdf" aria-hidden="true"></i><span class="hide-sm">PDF</span>';toast('PDF сохранён','ok')}).catch(function(){pa.innerHTML='';btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-file-pdf" aria-hidden="true"></i><span class="hide-sm">PDF</span>';toast('Ошибка PDF','er')});
 }
 function sharePdf(){
-  syncDom();var f=S.cur,pa=document.getElementById('print-area');pa.innerHTML=bldPdf(f);pa.style.display='block';
+  syncDom();var f=S.cur,pa=document.getElementById('print-area');pa.innerHTML=bldPdf(f);
   html2pdf().set({margin:[8,8,8,8],image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(pa.firstElementChild).outputPdf('blob').then(function(blob){
-    pa.style.display='none';var file=new File([blob],'cupping_'+(f.sn||'1')+'.pdf',{type:'application/pdf'});
+    pa.innerHTML='';var file=new File([blob],'cupping_'+(f.sn||'1')+'.pdf',{type:'application/pdf'});
     if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({title:'Каппинг',text:(f.ds||'Образец')+' — '+f.fs.toFixed(2),files:[file]}).then(function(){toast('Отправлено','ok')}).catch(function(){})}
     else{var u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='cupping_'+(f.sn||'1')+'.pdf';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);toast('PDF скачан','wa')}
-  }).catch(function(e){pa.style.display='none';toast('Ошибка','er')});
+  }).catch(function(e){pa.innerHTML='';toast('Ошибка','er')});
 }
 
 function trigImp(){document.getElementById('ifile').click()}
@@ -606,13 +625,13 @@ document.getElementById('ifile').addEventListener('change',function(){
       if(!Array.isArray(data.uc))data.uc=[1,1,1,1,1];if(!Array.isArray(data.cc))data.cc=[1,1,1,1,1];if(!Array.isArray(data.swc))data.swc=[1,1,1,1,1];if(!Array.isArray(data.df))data.df=[];
       calc(data);
       if(S.forms.length>=MX){showM('Лимит','Открыть без сохранения?',[{t:'Отмена'},{t:'Открыть',c:'btn-accent',a:function(){S.cur=data;S.eid=null;S.snp=sp(data);goPage('form')}}])}
-      else{showM('Импорт','Загрузить «'+(data.ds||'Образец '+(data.sn||'?'))+'»?',[{t:'Только открыть',a:function(){S.cur=data;S.eid=null;S.snp=sp(data);goPage('form')}},{t:'Сохранить',c:'btn-accent',a:function(){data.id=uid();S.forms.push(data);svF();S.cur=data;S.eid=data.id;S.snp=sp(data);goPage('form');toast('Импортировано','ok')}}])}
+      else{showM('Импорт','Загрузить «'+(data.ds||'Образец '+(data.sn||'?'))+'»?',[{t:'Только открыть',a:function(){S.cur=data;S.eid=null;S.snp=sp(data);goPage('form')}},{t:'Сохранить',c:'btn-accent',a:function(){data.id=uid();S.forms.push(data);svF();S.cur=data;S.eid=data.id;S.snp=sp(data);goPage('form');updFormCount();toast('Импортировано','ok')}}])}
     }catch(er){toast('Некорректный файл','er')}};reader.readAsText(file);
 });
 
 window.addEventListener('scroll',function(){document.getElementById('stb').classList.toggle('vis',window.scrollY>400)},{passive:true});
 
-function init(){apTh();ldF();goPage('home')}
+function init(){apTh();ldF();goPage('home');updFormCount()}
 init();
 </script>
 </body>
